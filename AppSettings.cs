@@ -34,7 +34,7 @@ namespace VideoEditor
         public short WindowWidth { get; set; }
         public short WindowHeight { get; set; }
 
-        private static readonly string SettingsFilePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Video Editor", "appsettings.json");
+        private static readonly string SettingsFilePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Trimly", "appsettings.json");
 
         public static AppSettings Load()
         {

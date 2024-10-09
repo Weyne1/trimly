@@ -7,9 +7,9 @@
         mc:Ignorable="d"
         KeyUp="MainWindow_KeyUp"
         PreviewKeyDown ="Window_KeyDown"
-        Title="Fast Video Editor Pro" Height="720" Width="1070"
+        Title="Trimly" Height="720" Width="1070"
         MinHeight="720"
-        MinWidth="830"
+        MinWidth="1070"
         WindowStartupLocation="CenterScreen"
         SizeChanged="Window_SizeChanged"
         Closing="Window_Closing"
@@ -617,7 +617,7 @@
 
 
     </Window.Resources>
-    <Grid Background="#232323">
+    <Grid Background="#232323" x:Name="mainGrid">
         <Grid.Effect>
             <DropShadowEffect Color="Black" Direction="270" ShadowDepth="0" BlurRadius="10"/>
         </Grid.Effect>
@@ -625,29 +625,29 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="3"/>
             <RowDefinition Height="15" MinHeight="15" MaxHeight="20"/>
-            <RowDefinition Height="255*"/>
-            <RowDefinition Height="20*" MinHeight="20" MaxHeight="25"/>
-            <RowDefinition Height="235*" MaxHeight="235"/>
-            <RowDefinition Height="20*" MinHeight="20" MaxHeight="25"/>
-            <RowDefinition Height="80*" MaxHeight="100"/>
-            <RowDefinition Height="Auto" MinHeight="33"/>
+            <RowDefinition x:Name="videoHeightRow" MinHeight="270" Height="282*"/>
+            <RowDefinition Height="21*" MinHeight="20" MaxHeight="25"/>
+            <RowDefinition Height="235*" MinHeight="235" MaxHeight="235"/>
+            <RowDefinition Height="21*" MinHeight="20" MaxHeight="25"/>
+            <RowDefinition Height="94*" MinHeight="90" MaxHeight="100"/>
+            <RowDefinition Height="33.003"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0*"/>
-            <ColumnDefinition Width="10*" MinWidth="10" MaxWidth="30"/>
-            <ColumnDefinition Width="245*" MinWidth="490" MaxWidth="490"/>
-            <ColumnDefinition Width="23*" MinWidth="20"/>
-            <ColumnDefinition Width="245*" MinWidth="200" MaxWidth="1020"/>
-            <ColumnDefinition Width="10*" MinWidth="10" MaxWidth="30"/>
+            <ColumnDefinition Width="14*" MinWidth="10" MaxWidth="30"/>
+            <ColumnDefinition Width="608*" MinWidth="490" MaxWidth="490"/>
+            <ColumnDefinition Width="28*" MinWidth="20"/>
+            <ColumnDefinition x:Name="videoWidthRow" Width="407*" MinWidth="407" MaxWidth="1020"/>
+            <ColumnDefinition Width="14*" MinWidth="10" MaxWidth="30"/>
         </Grid.ColumnDefinitions>
 
-        <Rectangle Margin="0,0,0,0" Grid.Row="2" Grid.Column="2"
+        <Rectangle Margin="9,0,6,0" Grid.Row="2" Grid.Column="2"
            Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5"/>
 
         <!--Панель выбора источника и выходного файла-->
 
-        <StackPanel Margin="0,15,0,0" Grid.Column="2" Grid.Row="2">
+        <StackPanel Margin="5,15,5,0" Grid.Column="2" Grid.Row="2">
             <TextBlock x:Name="InputFilePathText" Margin="30,0,0,3" Text="Исходное видео:" Grid.Column="3" Grid.Row="3" 
                        Foreground="#9ACFFF" FontFamily="Exo 2 SemiBold" FontSize="14"/>
             <StackPanel Orientation="Horizontal">
@@ -724,10 +724,10 @@
         </StackPanel>
 
         <!--Панель параметров видео-->
-        <Rectangle Grid.Row="4" Grid.Column="2"
-           Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5"/>
+        <Rectangle Grid.Row="3" Grid.Column="2"
+           Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5" Margin="9,21,6,1" Grid.RowSpan="2"/>
 
-        <StackPanel Grid.Column="2" Grid.Row="4">
+        <StackPanel Grid.Column="2" Grid.Row="3" Margin="5,21,5,1" Grid.RowSpan="2">
             <StackPanel Margin="0,10,0,0" Orientation="Horizontal" Grid.Row="2">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
@@ -796,11 +796,11 @@
         </StackPanel>
 
 
-        <Rectangle Grid.Row="6" Grid.Column="2"
-            Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5"/>
+        <Rectangle Grid.Row="5" Grid.Column="2"
+            Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5" Margin="5,21,5,0" Grid.RowSpan="2"/>
 
-        <StackPanel Grid.Column="2" Grid.Row="6">
-            <TextBlock Margin="20,10,0,0" HorizontalAlignment="Left" Width="475" FontFamily="Exo 2 SemiBold" Foreground="DimGray" FontSize="13" Height="70">
+        <StackPanel Grid.Column="2" Grid.Row="5" Margin="5,21,5,0" Grid.RowSpan="2">
+            <TextBlock Margin="20,10,0,0" HorizontalAlignment="Left" Width="460" FontFamily="Exo 2 SemiBold" Foreground="DimGray" FontSize="13" Height="70">
             <Run Text="- Для обрезки используйте клавиши [I] и [O]"/>
                 <LineBreak/>
             <Run Language="ru-ru" Text="- Управление воспроизведением - [SPACE] или [K]"/>
@@ -813,7 +813,7 @@
 
 
         <!--Предпросмотр видео-->
-        <Grid Grid.Column="4" Grid.Row="2">
+        <Grid Grid.Column="4" Grid.Row="2" Margin="5,0,5,0">
             <Rectangle Margin="2,1,2,0"
                 Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5"/>
             <Rectangle
@@ -824,18 +824,26 @@
                 RadiusX="10"
                 RadiusY="10" Margin="19,12,18,15" Grid.Row="2" Grid.Column="4">
             </Rectangle>
+            <Image VerticalAlignment="Center" Opacity="0.2" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="DragAndDropImage" Source="images\drag.png" Height="180" Width="180" Margin="0,-30,0,0"/>
             <MediaElement 
-                VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                 AllowDrop="true" Drop="VideoDrop" 
                 Name="mediaElement" LoadedBehavior="Manual" 
                 UnloadedBehavior="Stop" 
                 Stretch="Uniform" Margin="6,5,4,3" />
-            <Image VerticalAlignment="Center" Opacity="0.2" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="DragAndDropImage" Source="images\drag.png" Height="180" Width="180" Margin="0,-30,0,0"/>
-            <Image VerticalAlignment="Center" Opacity="0" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="PlayImage" Source="images\play.png" Height="60" Width="60"/>
+            <Image VerticalAlignment="Center" Opacity="0" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="PlayImage" Source="images\play.png" Height="60" Width="60">
+                <Image.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Image.RenderTransform>
+                <Image.RenderTransformOrigin>
+                    <Point X="0.5" Y="0.5" />
+                </Image.RenderTransformOrigin>
+            </Image>
             <Rectangle
                 x:Name="CursorRect"
                 AllowDrop="true" 
                 Drop="VideoDrop"
+                Opacity="0"
                 Fill="Transparent" Margin="-2,1,0,-4"
                 MouseDown="MediaElement_MouseDown">
             </Rectangle>
@@ -843,28 +851,30 @@
 
 
         <!--Панель со слайдером-->
-        <Rectangle Margin="0,0,1,1"
-                    Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5" RenderTransformOrigin="0.5,0.5" Grid.Row="4" Grid.Column="4"/>
+        <Rectangle Margin="5,21,5,1"
+                    Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5" RenderTransformOrigin="0.5,0.5" Grid.Row="3" Grid.Column="4" Grid.RowSpan="2"/>
 
-        <StackPanel Grid.Column="4" Grid.Row="4">
-            <Grid Height="61">
+        <StackPanel Grid.Column="4" Grid.Row="3" Margin="5,21,5,1" Grid.RowSpan="2">
+            <Grid Height="60">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" MinWidth="139.811" />
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="140" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel VerticalAlignment="Center" x:Name="FirstMarkerPanel" Orientation="Horizontal" Margin="0,0,2,0" Height="70" Grid.ColumnSpan="2">
+                <StackPanel x:Name="FirstMarkerPanel" Orientation="Horizontal" Height="60">
                     <!--<Rectangle Margin="18,0,0,0" Width="3" Height="16" Fill="Red"></Rectangle>-->
                 </StackPanel>
-                <StackPanel VerticalAlignment="Center" x:Name="SecondMarkerPanel" Orientation="Horizontal" Margin="0,0,2,0" Height="70" Grid.ColumnSpan="2">
+                <StackPanel x:Name="SecondMarkerPanel" Orientation="Horizontal" Height="60">
                     <!--<Rectangle Margin="230,0,0,0" Width="3" Height="16" Fill="Red"></Rectangle>-->
                 </StackPanel>
 
-                <Slider Margin="12,34,135,0" Style="{DynamicResource SliderStyle1}"
-                    PreviewMouseLeftButtonDown="TrimSlider_DragStarted" PreviewMouseLeftButtonUp="TrimSlider_DragCompleted" 
-                    x:Name="TrimSlider" ValueChanged="TrimSlider_ValueChanged" VerticalAlignment="Top" Height="18" 
-                    SmallChange="1" Maximum="0.1" Grid.Column="0" Value="0" Grid.ColumnSpan="2"/>
-
+                <Slider Margin="12,34,0,0" Style="{DynamicResource SliderStyle1}"
+                    PreviewMouseLeftButtonDown="TrimSlider_DragStarted" 
+                    PreviewMouseLeftButtonUp="TrimSlider_DragCompleted"
+                    ValueChanged="TrimSlider_ValueChanged"
+                    x:Name="TrimSlider" VerticalAlignment="Top" Height="18" 
+                    SmallChange="1" Maximum="0.1" Grid.Column="0" Value="0">
+                </Slider>
 
                 <TextBox VerticalAlignment="Top" Style="{DynamicResource TextBoxStyle1}" x:Name="TrimSliderText" LostFocus="TrimSliderText_LostFocus" 
                     TextChanged="TrimSliderText_TextChanged" HorizontalAlignment="Center" Text="0:00:00:00" 
@@ -887,11 +897,10 @@
 
 
         <!--Кнопка рендера и рендер текст-->
-        <StackPanel VerticalAlignment="Top" Margin="46,18,1,0" Grid.Column="3" Grid.Row="5" Height="102" Grid.ColumnSpan="2" Grid.RowSpan="2">
+        <StackPanel VerticalAlignment="Center" Margin="5,0,5,0" Grid.Column="4" Grid.Row="6" Height="90">
             <TextBlock Margin="0,20,0,0" x:Name="LastRenderedVideoText" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Cursor="Hand" MouseLeftButtonDown="ViewRenderedVideo" Width="203" Height="26" FontSize="14" FontFamily="Exo 2 SemiBold" Foreground="#50ABFF" TextAlignment="Center" TextTrimming="CharacterEllipsis" IsEnabled="False"><Run Text="[100%] - VideoName.mp4"/></TextBlock>
             <Button Margin="30,10,30,10" Style="{DynamicResource ButtonStyle1}" x:Name="RenderButton" Content="Отрендерить" Click="RenderButton_Click" 
                        MaxWidth="200" Height="30" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8" IsEnabled="False"/>
-            <Canvas Height="100"/>
         </StackPanel>
     </Grid>
 </Window>

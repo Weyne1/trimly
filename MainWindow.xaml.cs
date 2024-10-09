@@ -4,6 +4,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -15,6 +16,7 @@ using System.Windows.Documents;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
@@ -58,6 +60,7 @@ namespace VideoEditor
         private float audioVolume = 1.0f;
         private float videoSpeed = 1.0f;
         private float aspectRatio = 1.777f;
+        private float windowAspectRatio = 1.4f;
         private float frameDuration = 0;
         private double videoDuration = 0;
         private double firstMarkerValue = 0;
@@ -66,7 +69,7 @@ namespace VideoEditor
         private double zoomOutPoint = 0;
 
         private string outputType = ".mp4";
-        private readonly string version = "Pro 1.4.0";
+        private readonly string title = "Trimly 1.0.0";
 
         private WindowState previousWindowState;
         private WindowStyle previousWindowStyle;
@@ -85,12 +88,31 @@ namespace VideoEditor
             timer.Tick += Timer_Tick;
             timer.Start();
 
-            Title = "Fast Editor " + version;
+            Title = title;
 
             LastRenderedVideoText.Opacity = 0;
         }
+
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            // Получаем новую ширину videoWidthRow
+            double newWidth = videoWidthRow.ActualWidth;
+            double newHeight = newWidth / 1.777f;
+            videoHeightRow.Height = new GridLength(newHeight);
+
+            // Рассчитываем общую высоту окна
+            double totalOtherRowsHeight = 0;
+            foreach (var row in mainGrid.RowDefinitions)
+            {
+                if (row != videoHeightRow)
+                {
+                    totalOtherRowsHeight += row.ActualHeight;
+                }
+            }
+
+            MinHeight = totalOtherRowsHeight + 33 + newHeight;
+
+            // Проверка маркеров, если они присутствуют
             if (hasFirstMarker || hasSecondMarker)
             {
                 if (hasFirstMarker)
@@ -102,8 +124,8 @@ namespace VideoEditor
                     DeleteMarker(2);
                 }
             }
-
         }
+
 
         private void ConfigureFFMpeg()
         {
@@ -294,15 +316,6 @@ namespace VideoEditor
                 await Task.Delay(50);
                 isSkipping = false;
             }
-        }
-
-        private void MuteVideo()
-        {
-            mediaElement.Volume = 0;
-        }
-        private void UnmuteVideo()
-        {
-            mediaElement.Volume = audioVolume / 2;
         }
 
         private void WidthTextChanged(object sender, TextChangedEventArgs e)
@@ -502,13 +515,13 @@ namespace VideoEditor
 
             try
             {
+                if (isMediaPlaying) ChangeMediaPlayerStatus();
+
                 isRendering = true;
                 RenderButton.IsEnabled = false;
 
                 TimeSpan trimStart = TimeSpan.FromMilliseconds(firstMarkerValue);
                 TimeSpan trimEnd = TimeSpan.FromMilliseconds(secondMarkerValue);
-
-                if (isMediaPlaying) ChangeMediaPlayerStatus();
 
                 progressWindow.SetWindowParent(this);
                 progressWindow.ChangeTitle("Рендеринг...");
@@ -848,30 +861,28 @@ namespace VideoEditor
 
         private async void LoadVideo(string videoPath)
         {
-            isMediaPlaying = false;
-
-            mediaElement.Stop();
-            mediaElement.Close();
-            mediaElement.Source = null;
-            MuteVideo();
+            if (mediaElement.Source != null)
+            {
+                if (isMediaPlaying) { isMediaPlaying = false; }
+                mediaElement.Close();
+                mediaElement.Source = null;
+                mediaElement.Position = TimeSpan.FromMilliseconds(0);
+            }
 
             mediaElement.Source = new Uri($"{videoPath}", UriKind.RelativeOrAbsolute);
 
             DragAndDropImage.Opacity = 0;
-            PlayImage.Opacity = 1;
             CursorRect.Cursor = Cursors.Hand;
-            
-            await SetVideoPrewiew();
+            PlayImage.Opacity = 1;
 
-            UnmuteVideo();
-        }
-        private async Task SetVideoPrewiew()
-        {
-            MuteVideo();
+            ApplyStopAnimation();
+
+            mediaElement.Volume = 0;
             mediaElement.Play();
-            await Task.Delay(50);
+            await Task.Delay(20);
             mediaElement.Stop();
-            UnmuteVideo();
+            mediaElement.Volume = audioVolume / 2;
+            mediaElement.Position = TimeSpan.FromMilliseconds(0);
         }
         private void ChangeMediaPlayerStatus()
         {
@@ -879,15 +890,79 @@ namespace VideoEditor
             {
                 mediaElement.Pause();
                 isMediaPlaying = false;
-                PlayImage.Opacity = 1;
+                ApplyStopAnimation();
             }
             else if (!isMediaPlaying && InputFilePath.Text != string.Empty && !isRendering)
             {
                 mediaElement.Play();
                 isMediaPlaying = true;
-                PlayImage.Opacity = 0;
+                ApplyPlayAnimation();
             }
         }
+
+        private void ApplyStopAnimation()
+        {
+            var scaleTransform = PlayImage.RenderTransform as ScaleTransform;
+
+            // Анимация по оси X
+            var bounceX = new DoubleAnimation
+            {
+                From = 0.5,
+                To = 1.0,
+                Duration = TimeSpan.FromMilliseconds(200),
+                EasingFunction = new BackEase
+                {
+                    EasingMode = EasingMode.EaseOut
+                }
+            };
+
+            // Анимация по оси Y
+            var bounceY = new DoubleAnimation
+            {
+                From = 0.5,
+                To = 1.0,
+                Duration = TimeSpan.FromMilliseconds(200),
+                EasingFunction = new BackEase
+                {
+                    EasingMode = EasingMode.EaseOut
+                }
+            };
+
+            scaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, bounceX);
+            scaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, bounceY);
+        }
+        private void ApplyPlayAnimation()
+        {
+            var scaleTransform = PlayImage.RenderTransform as ScaleTransform;
+
+            // Анимация по оси X
+            var bounceX = new DoubleAnimation
+            {
+                From = 1.0,
+                To = 0.0,
+                Duration = TimeSpan.FromMilliseconds(200),
+                EasingFunction = new QuinticEase
+                {
+                    EasingMode = EasingMode.EaseOut
+                }
+            };
+
+            // Анимация по оси Y
+            var bounceY = new DoubleAnimation
+            {
+                From = 1.0,
+                To = 0.0,
+                Duration = TimeSpan.FromMilliseconds(200),
+                EasingFunction = new QuinticEase
+                {
+                    EasingMode = EasingMode.EaseOut
+                }
+            };
+
+            scaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, bounceX);
+            scaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, bounceY);
+        }
+
         private Point GetThumbPosition(Slider slider)
         {
             // Get the Slider's template
@@ -990,7 +1065,7 @@ namespace VideoEditor
         {
             Slider slider = sender as Slider;
 
-            if (!isDragging && isMediaPlaying)
+            if (isMediaPlaying && !isDragging)
             {
                 const short tolerance = 50; // допустимое отклонение в миллисекундах
 
@@ -1014,10 +1089,9 @@ namespace VideoEditor
 
             if (!isSnapshoting && isDragging)
             {
-                await SetPreviewFrame(100);
+                await SetPreviewFrame(150);
             }
         }
-
         private void TrimSlider_DragStarted(object sender, MouseButtonEventArgs e)
         {
             isDragging = true;
@@ -1049,12 +1123,12 @@ namespace VideoEditor
             isSnapshoting = true;
             mediaElement.IsMuted = muteVideo;
 
-            if (isMediaPlaying)
+            if (isMediaPlaying && !playAfterDragging)
             {
                 ChangeMediaPlayerStatus();
                 playAfterDragging = true;
             }
-            
+
             mediaElement.Position = TimeSpan.FromMilliseconds(TrimSlider.Value);
             mediaElement.Play();
 
@@ -1071,7 +1145,6 @@ namespace VideoEditor
         {
             TrimSliderText.Text = Regex.Replace(TrimSliderText.Text, "[^0-9:]", "");
         }
-
         private async void TrimSliderText_LostFocus(object sender, RoutedEventArgs e) => await EditTrimSliderText();
         private async Task EditTrimSliderText()
         {
@@ -1093,7 +1166,7 @@ namespace VideoEditor
 
                     TimeSpan value = TimeSpan.FromMilliseconds(TrimSlider.Value);
                     mediaElement.Position = value;
-                    if (isSnapshoting) await SetPreviewFrame(50);
+                    await SetPreviewFrame(50);
                     mediaElement.Position = value;
                 }
                 catch { }
