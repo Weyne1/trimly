@@ -617,7 +617,7 @@
 
 
     </Window.Resources>
-    <Grid Background="#232323" x:Name="mainGrid">
+    <Grid Background="#232323" x:Name="MainGrid">
         <Grid.Effect>
             <DropShadowEffect Color="Black" Direction="270" ShadowDepth="0" BlurRadius="10"/>
         </Grid.Effect>
@@ -636,13 +636,13 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0*"/>
             <ColumnDefinition Width="14*" MinWidth="10" MaxWidth="30"/>
-            <ColumnDefinition Width="608*" MinWidth="490" MaxWidth="490"/>
+            <ColumnDefinition Width="608*" MinWidth="490" MaxWidth="90"/>
             <ColumnDefinition Width="28*" MinWidth="20"/>
             <ColumnDefinition x:Name="videoWidthRow" Width="407*" MinWidth="407" MaxWidth="1020"/>
             <ColumnDefinition Width="14*" MinWidth="10" MaxWidth="30"/>
         </Grid.ColumnDefinitions>
 
-        <Rectangle Margin="9,0,6,0" Grid.Row="2" Grid.Column="2"
+        <Rectangle x:Name="DecorBorder1" Margin="9,0,6,0" Grid.Row="2" Grid.Column="2"
            Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5"/>
 
         <!--Панель выбора источника и выходного файла-->
@@ -653,7 +653,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBox FontStretch="Condensed" Style="{DynamicResource TextBoxStyle1}" x:Name="InputFilePath" 
                          AllowDrop="true" Drop="VideoDrop" Width="300" IsReadOnly="True" Margin="28,0,5,0" 
-                         Height="24" FontFamily="Exo 2 SemiBold" Foreground="#FF7F7F7F" FontSize="14" Text=""/>
+                         Height="24" FontFamily="Exo 2 SemiBold" Foreground="#FF7F7F7F" FontSize="14" Text="" TextChanged="InputFilePath_TextChanged"/>
                 <Button Margin="5,0,5,0" Style="{DynamicResource ButtonStyle1}" AllowDrop="true" 
                         Drop="VideoDrop" Content="Выбрать файл..." Click="SelectInputFile_Click" MinWidth="120" 
                         FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" FontSize="14"/>
@@ -696,7 +696,7 @@
                 </StackPanel>
             </Grid>
 
-            <StackPanel Margin="10,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left" Width="481">
+            <StackPanel Margin="10,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left">
                 <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="4" Width="91" Height="23" FontSize="14" 
                                FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right"><Run Language="ru-ru" Text="Громкость: "/></TextBlock>
 
@@ -718,16 +718,16 @@
                                FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8"><Run Language="ru-ru" Text="1x"/></TextBlock>
             </StackPanel>
 
-            <CheckBox VerticalAlignment="Stretch" Style="{DynamicResource CheckBoxStyle1}" Content="Объединить аудиодорожки" HorizontalAlignment="Left" x:Name="MergeAudioTracksCheck" Unchecked="MergeAudioTracksCheck_Checked" Checked="MergeAudioTracksCheck_Checked" IsChecked="true" 
+            <CheckBox VerticalAlignment="Stretch" Style="{DynamicResource CheckBoxStyle1}" Content="Объединить аудиодорожки, если их несколько" HorizontalAlignment="Left" x:Name="MergeAudioTracksCheck" Unchecked="MergeAudioTracksCheck_Checked" Checked="MergeAudioTracksCheck_Checked" IsChecked="true" 
                       Grid.Column="2" Grid.Row="5" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" Margin="30,5,0,0" />
 
         </StackPanel>
 
         <!--Панель параметров видео-->
-        <Rectangle Grid.Row="3" Grid.Column="2"
+        <Rectangle x:Name="DecorBorder2" Grid.Row="3" Grid.Column="2"
            Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5" Margin="9,21,6,1" Grid.RowSpan="2"/>
 
-        <StackPanel Grid.Column="2" Grid.Row="3" Margin="5,21,5,1" Grid.RowSpan="2">
+        <StackPanel x:Name="EditParamsPanel" Grid.Column="2" Grid.Row="3" Margin="5,21,5,1" Grid.RowSpan="2">
             <StackPanel Margin="0,10,0,0" Orientation="Horizontal" Grid.Row="2">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
@@ -796,10 +796,10 @@
         </StackPanel>
 
 
-        <Rectangle Grid.Row="5" Grid.Column="2"
+        <Rectangle x:Name="DecorBorder3" Grid.Row="5" Grid.Column="2"
             Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5" Margin="5,21,5,0" Grid.RowSpan="2"/>
 
-        <StackPanel Grid.Column="2" Grid.Row="5" Margin="5,21,5,0" Grid.RowSpan="2">
+        <StackPanel x:Name="HelpPanel" Grid.Column="2" Grid.Row="5" Margin="5,21,5,0" Grid.RowSpan="2">
             <TextBlock Margin="20,10,0,0" HorizontalAlignment="Left" Width="460" FontFamily="Exo 2 SemiBold" Foreground="DimGray" FontSize="13" Height="70">
             <Run Text="- Для обрезки используйте клавиши [I] и [O]"/>
                 <LineBreak/>
@@ -810,25 +810,24 @@
             <Run Language="ru-ru" Text="- Перемотка: на 5 сек. - [J] и [L]; покадровая - стрелочки"/>
             </TextBlock>
         </StackPanel>
+        <Rectangle x:Name="DecoBorder5" Margin="5,0,5,0"
+                Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5" Grid.Column="4" Grid.Row="2"/>
 
 
         <!--Предпросмотр видео-->
-        <Grid Grid.Column="4" Grid.Row="2" Margin="5,0,5,0">
-            <Rectangle Margin="2,1,2,0"
-                Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5"/>
+        <Grid x:Name="MediaElementGrid" Grid.Column="4" Grid.Row="2" Margin="5,0,5,0">
             <Rectangle
                 Fill="Transparent"
                 Stroke="#303030"
                 StrokeThickness="2"
                 StrokeDashArray="10"
                 RadiusX="10"
-                RadiusY="10" Margin="19,12,18,15" Grid.Row="2" Grid.Column="4">
-            </Rectangle>
+                RadiusY="10" Margin="19,12,18,15" Grid.Row="2" Grid.Column="4"/>
             <Image VerticalAlignment="Center" Opacity="0.2" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="DragAndDropImage" Source="images\drag.png" Height="180" Width="180" Margin="0,-30,0,0"/>
             <MediaElement 
                 VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                 AllowDrop="true" Drop="VideoDrop" 
-                Name="mediaElement" LoadedBehavior="Manual" 
+                x:Name="mediaElement" LoadedBehavior="Manual" 
                 UnloadedBehavior="Stop" 
                 Stretch="Uniform" Margin="6,5,4,3" />
             <Image VerticalAlignment="Center" Opacity="0" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="PlayImage" Source="images\play.png" Height="60" Width="60">
@@ -845,16 +844,15 @@
                 Drop="VideoDrop"
                 Opacity="0"
                 Fill="Transparent" Margin="-2,1,0,-4"
-                MouseDown="MediaElement_MouseDown">
-            </Rectangle>
+                MouseDown="MediaElement_MouseDown"/>
         </Grid>
 
 
         <!--Панель со слайдером-->
-        <Rectangle Margin="5,21,5,1"
+        <Rectangle x:Name="DecorBorder4" Margin="5,21,5,1"
                     Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5" RenderTransformOrigin="0.5,0.5" Grid.Row="3" Grid.Column="4" Grid.RowSpan="2"/>
 
-        <StackPanel Grid.Column="4" Grid.Row="3" Margin="5,21,5,1" Grid.RowSpan="2">
+        <StackPanel x:Name="MediaConrolPanel" Grid.Column="4" Grid.Row="3" Margin="5,21,5,1" Grid.RowSpan="2">
             <Grid Height="60">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -893,11 +891,13 @@
 
             <TextBlock Margin="0,10,0,0" x:Name="ZoomStatusText" HorizontalAlignment="Stretch" Width="332" Height="26" FontSize="14" FontFamily="Exo 2 SemiBold" Foreground="#50ABFF" TextAlignment="Center" TextTrimming="CharacterEllipsis" ><Run Text="Перетащите видео в окно предпросмотра."/></TextBlock>
 
+            <CheckBox VerticalAlignment="Bottom" Style="{DynamicResource CheckBoxStyle1}" Content="Отображать кадры при перемотке" HorizontalAlignment="Left" x:Name="PrewievsOnDraggingCheck" IsChecked="true" 
+          Grid.Column="2" Grid.Row="5" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" Margin="35,35,0,0" />
         </StackPanel>
 
 
         <!--Кнопка рендера и рендер текст-->
-        <StackPanel VerticalAlignment="Center" Margin="5,0,5,0" Grid.Column="4" Grid.Row="6" Height="90">
+        <StackPanel x:Name="MediaStatePanel" VerticalAlignment="Center" Margin="5,0,5,0" Grid.Column="4" Grid.Row="6" Height="90">
             <TextBlock Margin="0,20,0,0" x:Name="LastRenderedVideoText" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Cursor="Hand" MouseLeftButtonDown="ViewRenderedVideo" Width="203" Height="26" FontSize="14" FontFamily="Exo 2 SemiBold" Foreground="#50ABFF" TextAlignment="Center" TextTrimming="CharacterEllipsis" IsEnabled="False"><Run Text="[100%] - VideoName.mp4"/></TextBlock>
             <Button Margin="30,10,30,10" Style="{DynamicResource ButtonStyle1}" x:Name="RenderButton" Content="Отрендерить" Click="RenderButton_Click" 
                        MaxWidth="200" Height="30" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8" IsEnabled="False"/>

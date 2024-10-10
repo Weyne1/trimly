@@ -26,7 +26,7 @@ using FFMpegCore;
 using FFMpegCore.Arguments;
 using FFMpegCore.Enums;
 using Microsoft.Win32;
-using VideoEditor.Properties;
+using Trimly.Properties;
 using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 using Path = System.IO.Path;
@@ -47,21 +47,21 @@ namespace VideoEditor
         private bool isFullScreen = false;
         private bool hasFirstMarker = false;
         private bool hasSecondMarker = false;
-        private bool mergeAudioTracks = true;
         private bool playAfterDragging = false;
+        private bool mergeAudioTracks = true;
 
         private short fpsBuffer = 0;
         private short sampleRatesBuffer = 0;
         private int videoBitrateBuffer = 0;
         private int audioBitrateBuffer = 0;
+
         private long globalBitrate = 0;
         private long globalAudioBitrate = 0;
-        private double globalFPS = 0;
         private float audioVolume = 1.0f;
         private float videoSpeed = 1.0f;
         private float aspectRatio = 1.777f;
-        private float windowAspectRatio = 1.4f;
-        private float frameDuration = 0;
+        private double frameDuration = 0;
+        private double globalFPS = 0;
         private double videoDuration = 0;
         private double firstMarkerValue = 0;
         private double secondMarkerValue = 0;
@@ -69,7 +69,7 @@ namespace VideoEditor
         private double zoomOutPoint = 0;
 
         private string outputType = ".mp4";
-        private readonly string title = "Trimly 1.0.0";
+        private readonly string windowTitle = "Trimly 1.0.0";
 
         private WindowState previousWindowState;
         private WindowStyle previousWindowStyle;
@@ -81,16 +81,25 @@ namespace VideoEditor
             ConfigureFFMpeg();
             LoadFromSettings();
 
-            DispatcherTimer timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(40)
-            };
-            timer.Tick += Timer_Tick;
-            timer.Start();
+            CompositionTarget.Rendering += OnWindowRendering;
+            mediaElement.MediaEnded += MediaElement_MediaEnded;
 
-            Title = title;
-
+            Title = windowTitle;
             LastRenderedVideoText.Opacity = 0;
+        }
+
+        private void OnWindowRendering(object sender, EventArgs e)
+        {
+            if (!isDragging && mediaElement.Source != null && isMediaPlaying)
+            {
+                TrimSlider.Value = mediaElement.Position.TotalMilliseconds;
+            }
+        }
+
+        private void MediaElement_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            mediaElement.Stop();
+            TrimSlider.Value = TrimSlider.Minimum;
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -102,7 +111,7 @@ namespace VideoEditor
 
             // Рассчитываем общую высоту окна
             double totalOtherRowsHeight = 0;
-            foreach (var row in mainGrid.RowDefinitions)
+            foreach (var row in MainGrid.RowDefinitions)
             {
                 if (row != videoHeightRow)
                 {
@@ -129,7 +138,6 @@ namespace VideoEditor
 
         private void ConfigureFFMpeg()
         {
-
             var binaryFolder = AppDomain.CurrentDomain.BaseDirectory;
 
             GlobalFFOptions.Configure(new FFOptions
@@ -306,7 +314,7 @@ namespace VideoEditor
 
                 if (!isMediaPlaying && !isSnapshoting)
                 {
-                    await SetPreviewFrame(20, true);
+                    await SetPreviewFrame(20);
                 }
                 else if (isMediaPlaying)
                 {
@@ -417,18 +425,18 @@ namespace VideoEditor
             {
                 Filter = filter,
                 FileName = filename
-        };
+            };
+
             if (saveFileDialog.ShowDialog() == true)
             {
                 OutputFilePath.Text = saveFileDialog.FileName;
             }
 
-            if (OutputFilePath.Text != string.Empty)
+            if (string.IsNullOrEmpty(InputFilePath.Text))
             {
                 OutputFilePathText.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FFC8C8C8"));
             }
-
-            if (!string.IsNullOrEmpty(InputFilePath.Text) && !string.IsNullOrEmpty(OutputFilePath.Text) && !isRendering)
+            else if (!string.IsNullOrEmpty(OutputFilePath.Text) && !isRendering)
             {
                 RenderButton.IsEnabled = true;
             }
@@ -451,14 +459,14 @@ namespace VideoEditor
 
                 globalBitrate = videoInfo.PrimaryVideoStream.BitRate;
                 globalAudioBitrate = videoInfo.PrimaryAudioStream?.BitRate ?? 0;
-                globalFPS = (short)videoInfo.PrimaryVideoStream.FrameRate;
-                frameDuration = (short)(1000 / globalFPS);
+                globalFPS = (short)Math.Round(videoInfo.PrimaryVideoStream.FrameRate);
+                frameDuration = TimeSpan.FromSeconds(1.0 / videoInfo.PrimaryVideoStream.FrameRate).TotalMilliseconds;
 
                 if (AutoParamCheck.IsChecked == true)
                 {
                     WidthInput.Text = videoInfo.PrimaryVideoStream.Width.ToString();
                     HeightInput.Text = videoInfo.PrimaryVideoStream.Height.ToString();
-                    FPSInput.Text = Math.Round(videoInfo.PrimaryVideoStream.FrameRate).ToString();
+                    FPSInput.Text = globalFPS.ToString();
                     VideoBitrateInput.Text = ((int)globalBitrate / 1000).ToString();
                     AudioBitrateInput.Text = ((int)globalAudioBitrate / 1000).ToString();
 
@@ -484,6 +492,7 @@ namespace VideoEditor
                 InputFilePathText.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FFC8C8C8"));
             }
         }
+
 
         private async void RenderButton_Click(object sender, RoutedEventArgs e) => await LoadToStartRender();
         private async Task LoadToStartRender()
@@ -600,7 +609,6 @@ namespace VideoEditor
                 case 1: sampleRates = 48000; break;
                 default: sampleRates = 41000; break;
             }
-
 
             await Task.Run(() =>
             {
@@ -821,9 +829,9 @@ namespace VideoEditor
                     Dispatcher.Invoke(() => DurationText.Text = $"Итоговая длительность: {formattedDuration}");
                 });
             }
-            catch //(Exception ex)
+            catch
             {
-                Dispatcher.Invoke(() => DurationText.Text = "Ошибка расчета длительности");
+                Dispatcher.Invoke(() => DurationText.Text = "Ошибка расчета :(");
             }
         }
 
@@ -849,24 +857,15 @@ namespace VideoEditor
             }
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            if (!isDragging && mediaElement.Source != null && mediaElement.NaturalDuration.HasTimeSpan && isMediaPlaying)
-            {
-                TrimSlider.Value = mediaElement.Position.TotalMilliseconds;
-            }
-        }
-
         private void MediaElement_MouseDown(object sender, MouseButtonEventArgs e) => ChangeMediaPlayerStatus();
 
-        private async void LoadVideo(string videoPath)
+        private void LoadVideo(string videoPath)
         {
             if (mediaElement.Source != null)
             {
                 if (isMediaPlaying) { isMediaPlaying = false; }
+                mediaElement.Stop();
                 mediaElement.Close();
-                mediaElement.Source = null;
-                mediaElement.Position = TimeSpan.FromMilliseconds(0);
             }
 
             mediaElement.Source = new Uri($"{videoPath}", UriKind.RelativeOrAbsolute);
@@ -876,27 +875,20 @@ namespace VideoEditor
             PlayImage.Opacity = 1;
 
             ApplyStopAnimation();
-
-            mediaElement.Volume = 0;
-            mediaElement.Play();
-            await Task.Delay(20);
-            mediaElement.Stop();
-            mediaElement.Volume = audioVolume / 2;
-            mediaElement.Position = TimeSpan.FromMilliseconds(0);
         }
-        private void ChangeMediaPlayerStatus()
+        private void ChangeMediaPlayerStatus(bool showAnimation = true)
         {
             if (isMediaPlaying)
             {
                 mediaElement.Pause();
                 isMediaPlaying = false;
-                ApplyStopAnimation();
+                if (showAnimation) ApplyStopAnimation();
             }
-            else if (!isMediaPlaying && InputFilePath.Text != string.Empty && !isRendering)
+            else if (mediaElement.Source != null && !isRendering)
             {
                 mediaElement.Play();
                 isMediaPlaying = true;
-                ApplyPlayAnimation();
+                if (showAnimation) ApplyPlayAnimation();
             }
         }
 
@@ -965,10 +957,8 @@ namespace VideoEditor
 
         private Point GetThumbPosition(Slider slider)
         {
-            // Get the Slider's template
             if (slider.Template.FindName("Thumb", slider) is UIElement thumb)
             {
-                // Get the position of the Thumb relative to the window
                 Point relativePoint = thumb.TransformToAncestor(TrimSlider).Transform(new Point(0, 0));
                 return relativePoint;
             }
@@ -1067,29 +1057,32 @@ namespace VideoEditor
 
             if (isMediaPlaying && !isDragging)
             {
-                const short tolerance = 50; // допустимое отклонение в миллисекундах
+                const short tolerance = 30; // допустимое отклонение в миллисекундах
 
                 if (Math.Abs(slider.Value - secondMarkerValue) <= tolerance)
                 {
+                    ChangeMediaPlayerStatus(false);
                     slider.Value = firstMarkerValue;
                     mediaElement.Position = TimeSpan.FromMilliseconds(firstMarkerValue);
+                    ChangeMediaPlayerStatus(false);
                 }
                 else if (Math.Abs(slider.Value - zoomOutPoint) <= tolerance)
                 {
-                    slider.Value = hasFirstMarker ? firstMarkerValue : zoomInPoint;
-                    mediaElement.Position = TimeSpan.FromMilliseconds(slider.Value);
+                    double newPos = hasFirstMarker ? firstMarkerValue : zoomInPoint;
+                    slider.Value = newPos;
+                    mediaElement.Position = TimeSpan.FromMilliseconds(newPos);
                 }
             }
 
-            // Отображение времени рядом со слайдером в формате hh:mm:ss:ff
+            // Отображение времени рядом со слайдером
             TimeSpan time = TimeSpan.FromMilliseconds(slider.Value);
-            short frames = (short)(slider.Value % 1000 / frameDuration);
-
+            short frames = (short)Math.Round((slider.Value % 1000) / frameDuration);
             TrimSliderText.Text = $"{time:h\\:mm\\:ss\\:}{frames:D2}";
 
-            if (!isSnapshoting && isDragging)
+            if (!isSnapshoting && isDragging && (bool)PrewievsOnDraggingCheck.IsChecked)
             {
-                await SetPreviewFrame(150);
+                mediaElement.IsMuted = true;
+                await SetPreviewFrame(20);
             }
         }
         private void TrimSlider_DragStarted(object sender, MouseButtonEventArgs e)
@@ -1107,7 +1100,9 @@ namespace VideoEditor
         private async void TrimSlider_DragCompleted(object sender, MouseButtonEventArgs e)
         {
             isDragging = false;
+
             mediaElement.Position = TimeSpan.FromMilliseconds(TrimSlider.Value);
+            mediaElement.IsMuted = false;
 
             if (playAfterDragging)
             {
@@ -1115,28 +1110,29 @@ namespace VideoEditor
                 ChangeMediaPlayerStatus();
                 playAfterDragging = false;
             }
+
+            if (!(bool)PrewievsOnDraggingCheck.IsChecked && !isMediaPlaying)
+            {
+                await SetPreviewFrame(20);
+            }
         }
-        private async Task SetPreviewFrame(short sleepTime, bool muteVideo = false)
+        private async Task SetPreviewFrame(short sleepTime)
         {
             if (isSnapshoting) return;
 
             isSnapshoting = true;
-            mediaElement.IsMuted = muteVideo;
 
             if (isMediaPlaying && !playAfterDragging)
             {
                 ChangeMediaPlayerStatus();
                 playAfterDragging = true;
             }
-
             mediaElement.Position = TimeSpan.FromMilliseconds(TrimSlider.Value);
+
             mediaElement.Play();
-
             await Task.Delay(sleepTime);
-
             mediaElement.Pause();
 
-            mediaElement.IsMuted = false;
             isSnapshoting = false;
         }
 
@@ -1159,10 +1155,10 @@ namespace VideoEditor
                     ushort seconds = ushort.Parse(parts[2]);
                     ushort frames = ushort.Parse(parts[3]);
 
-                    // Преобразование кадров в миллисекунды
+                    // Преобразование времени и кадров в миллисекунды
                     double millisecondsFromFrames = frames * frameDuration;
-
                     TrimSlider.Value = hours * 3600000 + minutes * 60000 + seconds * 1000 + millisecondsFromFrames;
+
 
                     TimeSpan value = TimeSpan.FromMilliseconds(TrimSlider.Value);
                     mediaElement.Position = value;
@@ -1345,6 +1341,11 @@ namespace VideoEditor
             }
 
             settings.Save();
+        }
+
+        private void InputFilePath_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
         }
     }
 }
