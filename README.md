@@ -1,5 +1,5 @@
 # Trimly - Simple video converter
-Windows (.NET 4.8) app based on WPF & Ffmpeg - quickly trim and compress the desired video fragment or extract audio.
+Windows (.NET 4.8) app based on WPF & Ffmpeg.
 
 > [!IMPORTANT]  
 > If you are not using the installer, you need [download](https://www.ffmpeg.org/download.html#build-windows) the executable files **ffmpeg.exe**, **ffprobe.exe** and place them in the program folder.
