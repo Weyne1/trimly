@@ -1,68 +1,23 @@
-# Instances
-A .NET Standard `Process` wrapper with an elegant API, for both asyncronous and syncronous use, providing both Events and support for Tasks with cancellation support
- 
-![.NET Core](https://github.com/rosenbjerg/Instances/workflows/CI/badge.svg)
-[![codecov.io](https://codecov.io/github/rosenbjerg/agentdeploy/coverage.svg?branch=main)](https://app.codecov.io/gh/rosenbjerg/Instances)
-[![GitHub](https://img.shields.io/github/license/rosenbjerg/Instances)](https://github.com/rosenbjerg/Instances/blob/master/LICENSE)
-[![Nuget](https://img.shields.io/nuget/v/instances)](https://www.nuget.org/packages/instances/)
-[![Nuget](https://img.shields.io/nuget/dt/instances)](https://www.nuget.org/packages/instances/)
-![Dependent repos (via libraries.io)](https://img.shields.io/librariesio/dependent-repos/nuget/instances)
+# Trimly - Simple video converter
+Windows (.NET 4.8) app based on WPF & Ffmpeg - quickly trim and compress the desired video fragment or extract audio.
 
+> [!IMPORTANT]  
+> If you are not using the installer, you need [download](https://www.ffmpeg.org/download.html#build-windows) the executable files **ffmpeg.exe**, **ffprobe.exe** and place them in the program folder.
 
-# Usage
-There are three ways to use this library, requiring at least 1, 2, or 3 lines of code to use.
+### Features:
+- Trim;
+- Change meta (FPS, resolution, bitrate, etc.)
+- Change speed and volume;
+- Convert to MP4, MKV, MOV or AVI;
+- Extract MP3 or AAC audio from video;
+- Merge all audio tracks into one.
+- H.264 codec support for NVIDIA, AMD and Intel GPUs,
 
-### Shortest form, supporting only few options
-```c#
-var result = await Instance.FinishAsync("dotnet", "build -c Release", cancellationToken);
-Console.WriteLine(result.ExitCode);
-// or
-var result = Instance.Finish("dotnet", "build -c Release");
-```
+## Screenshots
+<img src="./assets/main_screenshot.png" height="720">
 
-### Short form, supporting more options
-```c#
-using var instance = Instance.Start("dotnet", "build -c Release");
-var result = await instance.WaitForExitAsync(cancellationToken);
-// or
-using var instance = Instance.Start("dotnet", "build -c Release");
-var result = instance.WaitForExit();
-```
+## Support
+This is my second pet project. If you like this, leave a :star: (top right) and become a [stargazer](https://github.com/Weyne1/trimly/stargazers)!
 
-### Full form, supporting all options
-```c#
-var processArgument = new ProcessArguments("dotnet", "build -c Release");
-processArgument.Exited += (_, exitResult) => Console.WriteLine(exitResult.ExitCode);
-processArgument.OutputDataReceived += (_, data) => Console.WriteLine(data);
-processArgument.ErrorDataReceived += (_, data) => Console.WriteLine(data);
-
-using var instance = processArgument.Start();
-
-var result = await instance.WaitForExitAsync(cancellationToken);
-// or 
-var result = instance.WaitForExit();
-```
-
-
-## Features
-```c#
-using var instance = Instance.Start("dotnet", "build -c Release");
-
-// send input to process' standard input
-instance.SendInput("Hello World");
-
-// stop the process
-instance.Kill();
-
-// access process output
-foreach (var line in instance.OutputData)
-    Console.WriteLine(line);
-// and error data easily while the process is running
-foreach (var line in instance.ErrorData)
-    Console.WriteLine(line);
-
-// or wait for the process to exit (with support for cancellation token)
-var result = await instance.WaitForExitAsync(cancellationToken);
-Console.WriteLine(result.ExitCode);
-Console.WriteLine(result.OutputData.Count);
-```
+## Credits
+This software uses code of [FFmpeg](http://ffmpeg.org) licensed under the [LGPLv2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
