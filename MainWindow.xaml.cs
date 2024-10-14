@@ -49,25 +49,30 @@ namespace VideoEditor
         private bool hasSecondMarker = false;
         private bool playAfterDragging = false;
         private bool mergeAudioTracks = true;
+        private bool isAudioOnly = false;
+        private bool isMediaElementLoading = false;
 
-        private short fpsBuffer = 0;
-        private short sampleRatesBuffer = 0;
-        private int videoBitrateBuffer = 0;
-        private int audioBitrateBuffer = 0;
+        private short bufferFPS = 0;
+        private short bufferSampleRates = 0;
+        private short bufferChannels = 0;
+        private int bufferVideoBitrate = 0;
+        private int bufferAudioBitrate = 0;
 
-        private long globalBitrate = 0;
+        private long globalViideoBitrate = 0;
         private long globalAudioBitrate = 0;
         private float audioVolume = 1.0f;
         private float videoSpeed = 1.0f;
-        private float aspectRatio = 1.777f;
         private double frameDuration = 0;
         private double globalFPS = 0;
         private double videoDuration = 0;
+
         private double firstMarkerValue = 0;
         private double secondMarkerValue = 0;
         private double zoomInPoint = 0;
         private double zoomOutPoint = 0;
+        private float aspectRatio = 1.777f;
 
+        private MediaPlayer soundPlayer;
         private string outputType = ".mp4";
         private readonly string windowTitle = "Trimly 1.0.0";
 
@@ -83,6 +88,7 @@ namespace VideoEditor
 
             CompositionTarget.Rendering += OnWindowRendering;
             mediaElement.MediaEnded += MediaElement_MediaEnded;
+            soundPlayer = new MediaPlayer();
 
             Title = windowTitle;
             LastRenderedVideoText.Opacity = 0;
@@ -413,6 +419,8 @@ namespace VideoEditor
                 case "MOV": filter = "MOV Files|*.mov"; break;
                 case "AVI": filter = "AVI Files|*.avi"; break;
                 case "MKV": filter = "MKV Files|*.mkv"; break;
+                case "MP3 - Audio": filter = "MP3 Files|*.mp3"; break;
+                case "AAC - Audio": filter = "AAC Files|*.aac"; break;
                 default: filter = "MP4 Files|*.mp4"; break;
             }
 
@@ -457,7 +465,7 @@ namespace VideoEditor
                 TrimSlider.Maximum = videoDuration;
                 TrimSlider.Value = TrimSlider.Minimum;
 
-                globalBitrate = videoInfo.PrimaryVideoStream.BitRate;
+                globalViideoBitrate = videoInfo.PrimaryVideoStream.BitRate;
                 globalAudioBitrate = videoInfo.PrimaryAudioStream?.BitRate ?? 0;
                 globalFPS = (short)Math.Round(videoInfo.PrimaryVideoStream.FrameRate);
                 frameDuration = TimeSpan.FromSeconds(1.0 / videoInfo.PrimaryVideoStream.FrameRate).TotalMilliseconds;
@@ -467,13 +475,33 @@ namespace VideoEditor
                     WidthInput.Text = videoInfo.PrimaryVideoStream.Width.ToString();
                     HeightInput.Text = videoInfo.PrimaryVideoStream.Height.ToString();
                     FPSInput.Text = globalFPS.ToString();
-                    VideoBitrateInput.Text = ((int)globalBitrate / 1000).ToString();
+                    VideoBitrateInput.Text = ((int)globalViideoBitrate / 1000).ToString();
                     AudioBitrateInput.Text = ((int)globalAudioBitrate / 1000).ToString();
 
-                    if (videoInfo.PrimaryAudioStream != null && videoInfo.PrimaryAudioStream.SampleRateHz > 44150)
-                        SampleRatesComboBox.SelectedIndex = 1;
-                    else
-                        SampleRatesComboBox.SelectedIndex = 0;
+                    if (videoInfo.PrimaryAudioStream != null)
+                    {
+                        int sampleRates = videoInfo.PrimaryAudioStream.SampleRateHz;
+
+                        if (sampleRates > 44100)
+                            SampleRatesComboBox.SelectedIndex = 0;
+                        else if (sampleRates <= 44100)
+                            SampleRatesComboBox.SelectedIndex = 1;
+                        else if (sampleRates <= 32000)
+                            SampleRatesComboBox.SelectedIndex = 2;
+                        else if (sampleRates <= 22050)
+                            SampleRatesComboBox.SelectedIndex = 3;
+                        else if (sampleRates <= 16000)
+                            SampleRatesComboBox.SelectedIndex = 4;
+                        else if (sampleRates <= 11025)
+                            SampleRatesComboBox.SelectedIndex = 5;
+                        else if (sampleRates <= 8000)
+                            SampleRatesComboBox.SelectedIndex = 6;
+
+                        if (videoInfo.PrimaryAudioStream.Channels == 1)
+                            ChannelsComboBox.SelectedIndex = 1;
+                        else
+                            ChannelsComboBox.SelectedIndex = 0;
+                    } 
                 }
 
                 aspectRatio = Math.Abs(videoInfo.PrimaryVideoStream.Width / (float)videoInfo.PrimaryVideoStream.Height);
@@ -483,11 +511,11 @@ namespace VideoEditor
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при получении параметров видео: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error getting video parameters: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
 
-            if (InputFilePath.Text != string.Empty)
+            if (!string.IsNullOrEmpty(InputFilePath.Text))
             {
                 InputFilePathText.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FFC8C8C8"));
             }
@@ -508,7 +536,13 @@ namespace VideoEditor
                 !int.TryParse(VideoBitrateInput.Text, out int videoBitrate) ||
                 !int.TryParse(AudioBitrateInput.Text, out int audioBitrate))
             {
-                MessageBox.Show("Пожалуйста, введите корректные значения для FPS и битрейта.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Please enter correct values ​​for FPS and bitrate.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (globalAudioBitrate == 0 && (outputType == ".mp3" || outputType == ".aac"))
+            {
+                MessageBox.Show("This video does not contain audio, so it cannot be extracted", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -533,15 +567,18 @@ namespace VideoEditor
                 TimeSpan trimEnd = TimeSpan.FromMilliseconds(secondMarkerValue);
 
                 progressWindow.SetWindowParent(this);
-                progressWindow.ChangeTitle("Рендеринг...");
+                progressWindow.ChangeTitle("Rendering...");
                 progressWindow.ChangeVideoTitle(Path.GetFileName(OutputFilePath.Text));
 
                 await RenderAsync(InputFilePath.Text, OutputFilePath.Text, fps, videoBitrate, audioBitrate, width, height, trimStart, trimEnd);
 
                 await Task.Delay(1000);
                 isRendering = false;
-                progressWindow.ChangeTitle("Рендеринг [Завершено]");
+                progressWindow.ChangeTitle("Rendering [Done]");
                 progressWindow.Close();
+
+                soundPlayer.Open(new Uri("sounds/render_finished.mp3", UriKind.Relative));
+                soundPlayer.Play();
 
                 // Проверяем, существует ли уже файл с таким именем
                 if (File.Exists(OutputFilePath.Text))
@@ -571,42 +608,68 @@ namespace VideoEditor
             {
                 if (!renderShutdown)
                 {
-                    MessageBox.Show($"Ошибка рендера видео: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Rendering error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     progressWindow.Close();
-                    ChangeRenderText("[ошибка] " + Path.GetFileName(InputFilePath.Text));
+                    ChangeRenderText("[Error] " + Path.GetFileName(InputFilePath.Text));
                 }
                 isRendering = false;
                 RenderButton.IsEnabled = true;
             }
         }
         private async Task RenderAsync(string inputPath, string outputPath, int fps, 
-            int videoBitrate, int audioBitrate, int width, int height, TimeSpan trimStart, TimeSpan trimEnd)
+        int videoBitrate, int audioBitrate, int width, int height, TimeSpan trimStart, TimeSpan trimEnd)
         {
             var videoInfo = await FFProbe.AnalyseAsync(inputPath);
             var totalTime = videoInfo.Duration;
             var outputDuration = trimEnd - trimStart;
             int audioStreamCount = videoInfo.AudioStreams.Count();
+            byte selectedChannels = (byte)ChannelsComboBox.SelectedIndex;
             byte selectedCodec = (byte)CodecComboBox.SelectedIndex;
             byte selectedSampleRates = (byte)SampleRatesComboBox.SelectedIndex;
 
             // Рассчет продолжительности с учетом скорости
             var adjustedDuration = TimeSpan.FromTicks((long)(outputDuration.Ticks / videoSpeed));
 
-            // Определение видеокодека
             string videoCodec;
-            switch (selectedCodec)
+            string audioCodec;
+
+            // Определение кодека
+            if (isAudioOnly)
             {
-                case 1: videoCodec = "h264_nvenc"; break;
-                case 2: videoCodec = "h264_qsv"; break;
-                case 3: videoCodec = "h264_amf"; break;
-                default: videoCodec = "libx264"; break;
+                videoCodec = null;
+                audioCodec = outputType == ".mp3" ? "libmp3lame" : "aac";
+            }
+            else
+            {
+                switch (selectedCodec)
+                {
+                    case 1: videoCodec = "h264_nvenc"; break;
+                    case 2: videoCodec = "h264_qsv"; break;
+                    case 3: videoCodec = "h264_amf"; break;
+                    default: videoCodec = "libx264"; break;
+                }
+                audioCodec = "aac";
+            }
+
+            // Определение кол-ва каналов
+            string channels;
+            switch (selectedChannels)
+            {
+                case 1: channels = "mono"; break;
+                default: channels = "stereo"; break;
             }
 
             // Определение частоты дискретизации
             int sampleRates;
             switch (selectedSampleRates)
             {
-                case 1: sampleRates = 48000; break;
+                case 0: sampleRates = 48000; break;
+                case 1: sampleRates = 41000; break;
+                case 2: sampleRates = 32000; break;
+                case 3: sampleRates = 22050; break;
+                case 4: sampleRates = 16000; break;
+                case 5: sampleRates = 11025; break;
+                case 6: sampleRates = 8000; break;
                 default: sampleRates = 41000; break;
             }
 
@@ -617,44 +680,65 @@ namespace VideoEditor
                     .FromFileInput(inputPath, true, options => options.Seek(trimStart))
                     .OutputToFile(outputPath, true, options =>
                     {
+                        // Общие параметры для видео и аудио
                         options
-                            .WithVideoCodec(videoCodec)
-                            .WithFramerate(fps)
-                            .Resize(width, height)
-                            .WithVideoBitrate(videoBitrate)
                             .UsingMultithreading(true)
-                            .WithAudioBitrate(audioBitrate)
                             .WithDuration(adjustedDuration);
 
-                        // Настройка аудио
-                        if (audioVolume == 0)
+                        // Настройка видео (если есть видео)
+                        if (!isAudioOnly)
                         {
-                            options.WithCustomArgument("-an"); // Удаление звука
+                            options
+                                .WithVideoCodec(videoCodec)
+                                .WithFramerate(fps)
+                                .Resize(width, height)
+                                .WithVideoBitrate(videoBitrate);
+
+                            // Настройка скорости видео
+                            if (videoSpeed != 1.0f)
+                            {
+                                options.WithCustomArgument($"-filter:v \"setpts={(1 / videoSpeed).ToString().Replace(',', '.')}*PTS\"");
+                            }
+                        }
+
+                        // Настройка аудио
+                        if (audioVolume == 0 || audioBitrate == 0) // Удаление звука
+                        {
+                            if (isAudioOnly)
+                            {
+                                MessageBox.Show("Audio bitrate or volume is set to 0, so the resulting file will be empty.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                options.WithCustomArgument($"-filter:a \"volume=0\""); // Громкость 0, вместо полного удаления
+                            }
+                            else
+                            {
+                                options.WithCustomArgument("-an");
+                            }
                         }
                         else
                         {
-                            if (audioStreamCount > 1) // Для нескольких дорожек
+                            if (audioStreamCount > 1) // Если несколько дорожек
                             {
                                 string filterComplex = string.Empty;
 
-                                for (int i = 0; i < audioStreamCount; i++) // Установка громкости и скорости для каждой дорожки
+                                for (int i = 0; i < audioStreamCount; i++) // Настройка для каждой аудиодорожки
                                 {
                                     filterComplex += $"[0:a:{i}]volume={audioVolume.ToString().Replace(',', '.')}," +
                                     $"atempo={videoSpeed.ToString().Replace(',', '.')}," +
-                                    $"aformat=sample_fmts=s16:sample_rates={sampleRates}:channel_layouts=stereo[a{i}];";
+                                    $"aformat=sample_fmts=s16:sample_rates={sampleRates}:channel_layouts={channels}[a{i}];";
                                 }
 
-                                if (mergeAudioTracks) // Объединение в одну дорожку
+                                if (mergeAudioTracks) // Объединение аудиодорожек
                                 {
                                     filterComplex += string.Join("", Enumerable.Range(0, audioStreamCount).Select(i => $"[a{i}]"));
-                                    filterComplex += $"amerge=inputs={audioStreamCount},pan=stereo|c0<c0+c2|c1<c1+c3[a]";
+                                    filterComplex += $"amerge=inputs={audioStreamCount},pan={channels}|c0<c0+c2|c1<c1+c3[a]";
                                     options.WithCustomArgument($"-filter_complex \"{filterComplex}\" -map 0:v -map [a]");
                                 }
-                                else // Рендер без объединения дорожек
+                                else // Без объединения аудиодорожек
                                 {
                                     filterComplex = filterComplex.TrimEnd(';');
                                     options.WithCustomArgument($"-filter_complex \"{filterComplex}\"");
 
+                                    // Мапим каждую дорожку
                                     for (int i = 0; i < audioStreamCount; i++)
                                     {
                                         options.WithCustomArgument($"-map [a{i}]");
@@ -663,19 +747,13 @@ namespace VideoEditor
                                     options.WithCustomArgument($"-map 0:v");
                                 }
                             }
-                            else // Для одной дорожки
+                            else // Если одна дорожка
                             {
                                 string audioFilter = $"volume={audioVolume.ToString().Replace(',', '.')}," +
                                 $"atempo={videoSpeed.ToString().Replace(',', '.')}," +
-                                $"aformat=sample_fmts=s16:sample_rates={sampleRates}:channel_layouts=stereo";
+                                $"aformat=sample_fmts=s16:sample_rates={sampleRates}:channel_layouts={channels}";
                                 options.WithCustomArgument($"-filter:a \"{audioFilter}\"");
                             }
-                        }
-
-                        // Настройка скорости видео
-                        if (videoSpeed != 1.0f)
-                        {
-                            options.WithCustomArgument($"-filter:v \"setpts={(1 / videoSpeed).ToString().Replace(',', '.')}*PTS\"");
                         }
                     })
                     .NotifyOnProgress(progress =>
@@ -684,8 +762,8 @@ namespace VideoEditor
                     }, totalTime)
                     .ProcessSynchronously();
             });
-
         }
+
 
         public void EnableRenderButton()
         {
@@ -769,14 +847,14 @@ namespace VideoEditor
                     }
                     else
                     {
-                        MessageBox.Show("Указанной папки не существует.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("The specified folder does not exist.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Не удалось открыть путь: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Failed to open path: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private async Task CalculateEstimatedSize()
@@ -787,26 +865,36 @@ namespace VideoEditor
                     !string.IsNullOrEmpty(VideoBitrateInput.Text) &&
                     !string.IsNullOrEmpty(AudioBitrateInput.Text))
                 {
-                    int bitrate = ParseBitrate(VideoBitrateInput.Text, globalBitrate);
                     int audioBitrate = ParseBitrate(AudioBitrateInput.Text, globalAudioBitrate);
 
                     var duration = TimeSpan.FromMilliseconds(secondMarkerValue - firstMarkerValue);
                     var adjustedDuration = TimeSpan.FromTicks((long)(duration.Ticks / videoSpeed));
                     int newDuration = (int)adjustedDuration.TotalSeconds;
 
-                    long sizeInBytes = (bitrate + (long)audioBitrate) * newDuration;
+                    long sizeInBytes = 0;
+
+                    if (isAudioOnly)
+                    {
+                        sizeInBytes = audioBitrate * newDuration;
+                    }
+                    else
+                    {
+                        int bitrate = ParseBitrate(VideoBitrateInput.Text, globalViideoBitrate);
+                        sizeInBytes = (bitrate + audioBitrate) * newDuration;
+                    }
+                    
                     double sizeInMegabytes = (double)sizeInBytes / (8 * 1024 * 1024) * 1000;
 
                     await Dispatcher.InvokeAsync(() =>
                     {
-                        EstimatedSizeText.Text = $"≈{sizeInMegabytes:F2} МБ";
+                        EstimatedSizeText.Text = $" · {sizeInMegabytes:F2} Mb";
                     });
                 }
             }
             catch (Exception ex)
             {
-                EstimatedSizeText.Text = "- МБ";
-                MessageBox.Show($"Не удалось рассчитать примерный размер видео: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                EstimatedSizeText.Text = " · ? Mb";
+                MessageBox.Show($"Could not calculate approximate video size: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private int ParseBitrate(string bitrateInput, long globalBitrate)
@@ -826,16 +914,16 @@ namespace VideoEditor
                     var formattedDuration = adjustedDuration.ToString(@"h\:mm\:ss");
 
                     // Обновление UI
-                    Dispatcher.Invoke(() => DurationText.Text = $"Итоговая длительность: {formattedDuration}");
+                    Dispatcher.Invoke(() => DurationText.Text = $"Total: {formattedDuration}");
                 });
             }
             catch
             {
-                Dispatcher.Invoke(() => DurationText.Text = "Ошибка расчета :(");
+                Dispatcher.Invoke(() => DurationText.Text = "Total: Error :(");
             }
         }
 
-        private void TypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void TypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string selectedOutputType = ((ComboBoxItem)TypeComboBox.SelectedItem).Content.ToString();
 
@@ -845,7 +933,33 @@ namespace VideoEditor
                 case "MOV": fileType = ".mov"; break;
                 case "AVI": fileType = ".avi"; break;
                 case "MKV": fileType = ".mkv"; break;
+                case "MP3 - Audio": fileType = ".mp3"; break;
+                case "AAC - Audio": fileType = ".aac"; break;
                 default: fileType = ".mp4"; break;
+            }
+
+            if ((fileType == ".mp3" || fileType == ".aac") && IsInitialized)
+            {
+                isAudioOnly = true;
+                MergeAudioTracksCheck.IsChecked = true;
+                MergeAudioTracksCheck.IsEnabled = false;
+                WidthInput.IsEnabled = false;
+                HeightInput.IsEnabled = false;
+                LinkCheck.IsEnabled = false;
+                FPSInput.IsEnabled = false;
+                VideoBitrateInput.IsEnabled = false;
+                CodecComboBox.IsEnabled = false;
+            }
+            else if (IsInitialized)
+            {
+                isAudioOnly = false;
+                MergeAudioTracksCheck.IsEnabled = true;
+                WidthInput.IsEnabled = true;
+                HeightInput.IsEnabled = !(bool)LinkCheck.IsChecked;
+                LinkCheck.IsEnabled = true;
+                FPSInput.IsEnabled = true;
+                VideoBitrateInput.IsEnabled = true;
+                CodecComboBox.IsEnabled = true;
             }
 
             outputType = fileType;
@@ -855,12 +969,16 @@ namespace VideoEditor
                 string fileName = Path.GetFileNameWithoutExtension(OutputFilePath.Text) + outputType;
                 OutputFilePath.Text = Path.GetDirectoryName(OutputFilePath.Text) + "\\" + fileName;
             }
+
+            await CalculateEstimatedSize();
         }
 
         private void MediaElement_MouseDown(object sender, MouseButtonEventArgs e) => ChangeMediaPlayerStatus();
 
         private void LoadVideo(string videoPath)
         {
+            isMediaElementLoading = true;
+
             if (mediaElement.Source != null)
             {
                 if (isMediaPlaying) { isMediaPlaying = false; }
@@ -870,15 +988,22 @@ namespace VideoEditor
 
             mediaElement.Source = new Uri($"{videoPath}", UriKind.RelativeOrAbsolute);
 
+            StrokeRectangle.Opacity = 0;
             DragAndDropImage.Opacity = 0;
             CursorRect.Cursor = Cursors.Hand;
             PlayImage.Opacity = 1;
 
             ApplyStopAnimation();
+
+            isMediaElementLoading = false;
         }
         private void ChangeMediaPlayerStatus(bool showAnimation = true)
         {
-            if (isMediaPlaying)
+            if (isMediaElementLoading)
+            {
+                return;
+            }
+            else if (isMediaPlaying)
             {
                 mediaElement.Pause();
                 isMediaPlaying = false;
@@ -1059,18 +1184,14 @@ namespace VideoEditor
             {
                 const short tolerance = 30; // допустимое отклонение в миллисекундах
 
-                if (Math.Abs(slider.Value - secondMarkerValue) <= tolerance)
+                if ((Math.Abs(slider.Value - secondMarkerValue) <= tolerance) ||
+                    Math.Abs(slider.Value - zoomOutPoint) <= tolerance)
                 {
                     ChangeMediaPlayerStatus(false);
-                    slider.Value = firstMarkerValue;
-                    mediaElement.Position = TimeSpan.FromMilliseconds(firstMarkerValue);
-                    ChangeMediaPlayerStatus(false);
-                }
-                else if (Math.Abs(slider.Value - zoomOutPoint) <= tolerance)
-                {
                     double newPos = hasFirstMarker ? firstMarkerValue : zoomInPoint;
-                    slider.Value = newPos;
                     mediaElement.Position = TimeSpan.FromMilliseconds(newPos);
+                    slider.Value = newPos;
+                    ChangeMediaPlayerStatus(false);
                 }
             }
 
@@ -1217,7 +1338,7 @@ namespace VideoEditor
                 string startPoint = TimeSpan.FromMilliseconds(zoomInPoint).ToString(@"h\:mm\:ss");
                 string endPoint = TimeSpan.FromMilliseconds(zoomOutPoint).ToString(@"h\:mm\:ss");
 
-                ZoomStatusText.Text = $"Зум от {startPoint} до {endPoint}.";
+                ZoomStatusText.Text = $"Zoomed from {startPoint} to {endPoint}.";
                 ResetZoomButton.IsEnabled = true;
             }
         }
@@ -1232,27 +1353,43 @@ namespace VideoEditor
             DeleteMarker(1);
             DeleteMarker(2);
 
-            ZoomStatusText.Text = "Предпросмотр без зума.";
+            ZoomStatusText.Text = "Preview without zoom.";
             ResetZoomButton.IsEnabled = false;
         }
 
-        private void CopyButton_Click(object sender, RoutedEventArgs e)
+        private void SaveVideoParamsButton_Click(object sender, RoutedEventArgs e)
         {
-            videoBitrateBuffer = int.Parse(VideoBitrateInput.Text.ToString());
-            audioBitrateBuffer = int.Parse(AudioBitrateInput.Text.ToString());
-            fpsBuffer = short.Parse(FPSInput.Text.ToString());
-            sampleRatesBuffer = (short)SampleRatesComboBox.SelectedIndex;
+            bufferFPS = short.Parse(FPSInput.Text.ToString());
+            bufferVideoBitrate = int.Parse(VideoBitrateInput.Text.ToString());
         }
-        private void PasteButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (videoBitrateBuffer > 0) 
-                VideoBitrateInput.Text = videoBitrateBuffer.ToString();
-            if (audioBitrateBuffer > 0) 
-                AudioBitrateInput.Text = audioBitrateBuffer.ToString();
-            if (fpsBuffer > 0)
-                FPSInput.Text = fpsBuffer.ToString();
 
-            SampleRatesComboBox.SelectedIndex = sampleRatesBuffer;
+        private void PasteVideoParamsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (bufferFPS > 0)
+                FPSInput.Text = bufferFPS.ToString();
+            if (bufferVideoBitrate > 0)
+                VideoBitrateInput.Text = bufferVideoBitrate.ToString();
+        }
+        private void SaveAudioParamsButton_Click(object sender, RoutedEventArgs e)
+        {
+            bufferAudioBitrate = int.Parse(AudioBitrateInput.Text.ToString());
+            bufferSampleRates = (short)SampleRatesComboBox.SelectedIndex;
+            bufferChannels = (short)ChannelsComboBox.SelectedIndex;
+        }
+        private void PasteAudioParamsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (bufferAudioBitrate > 0) 
+                AudioBitrateInput.Text = bufferAudioBitrate.ToString();
+            SampleRatesComboBox.SelectedIndex = bufferSampleRates;
+            ChannelsComboBox.SelectedIndex = bufferChannels;
+        }
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("- To trim video, use the [I] and [O] keys\n" +
+                "- Playback control - [SPACE] or [K]\n" +
+                "- Zoom/Reset Zoom- [Z] and [X]\n" +
+                "- Rewind: 5 sec. - [J] and [L]; frame by frame - arrows.", "Hotkeys", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void MergeAudioTracksCheck_Checked(object sender, RoutedEventArgs e)
@@ -1267,12 +1404,6 @@ namespace VideoEditor
             // Комбо боксы
             CodecComboBox.SelectedIndex = settings.Codec;
             TypeComboBox.SelectedIndex = settings.Type;
-            SampleRatesComboBox.SelectedIndex = settings.SampleRates;
-
-            // Галочки
-            MergeAudioTracksCheck.IsChecked = settings.MergeAudioTracks;
-            AutoParamCheck.IsChecked = settings.AutoMetaSet;
-
 
             // Выходной путь
             if (!string.IsNullOrEmpty(settings.Path))
@@ -1290,18 +1421,26 @@ namespace VideoEditor
                 FPSInput.Text = settings.FPS.ToString();
             if (settings.VideoBitrate > 0 && settings.VideoBitrate.ToString().Length < 7) 
                 VideoBitrateInput.Text = settings.VideoBitrate.ToString();
+            AutoParamCheck.IsChecked = settings.AutoMetaSet;
+
+            // Параметры аудио
             if (settings.AudioBitrate > 0 && settings.AudioBitrate.ToString().Length < 4) 
                 AudioBitrateInput.Text = settings.AudioBitrate.ToString();
-            
+            SampleRatesComboBox.SelectedIndex = settings.SampleRates;
+            ChannelsComboBox.SelectedIndex = settings.Channels;
+            MergeAudioTracksCheck.IsChecked = settings.MergeAudioTracks;
+
             // Пресеты
             if (settings.BufferFPS > 0 && settings.BufferFPS.ToString().Length < 4) 
-                fpsBuffer = settings.BufferFPS;
+                bufferFPS = settings.BufferFPS;
             if (settings.BufferVideoBitrate > 0 && settings.BufferVideoBitrate.ToString().Length < 7) 
-                videoBitrateBuffer = settings.BufferVideoBitrate;
+                bufferVideoBitrate = settings.BufferVideoBitrate;
             if (settings.BufferAudioBitrate > 0 && settings.BufferAudioBitrate.ToString().Length < 4) 
-                audioBitrateBuffer = settings.BufferAudioBitrate;
+                bufferAudioBitrate = settings.BufferAudioBitrate;
+            bufferSampleRates = settings.BufferSampleRates;
+            bufferChannels = settings.BufferChannels;
 
-            // Положение окна
+            // Окно
             if (settings.WindowWidth != 0 && settings.WindowHeight != 0)
             {
                 Width = settings.WindowWidth;
@@ -1315,25 +1454,32 @@ namespace VideoEditor
         {
             var settings = AppSettings.Load();
 
+            // Общее
             settings.Path = OutputFilePath.Text;
             settings.Codec = (byte)CodecComboBox.SelectedIndex;
             settings.Type = (byte)TypeComboBox.SelectedIndex;
-            settings.SampleRates = (byte)CodecComboBox.SelectedIndex;
 
-            settings.MergeAudioTracks = (bool)MergeAudioTracksCheck.IsChecked;
-            settings.AutoMetaSet = (bool)AutoParamCheck.IsChecked;
-
+            // Видео
             settings.Width = int.Parse(WidthInput.Text);
             settings.Height = int.Parse(HeightInput.Text);
             settings.FPS = short.Parse(FPSInput.Text);
             settings.VideoBitrate = int.Parse(VideoBitrateInput.Text);
+            settings.AutoMetaSet = (bool)AutoParamCheck.IsChecked;
+
+            // Аудио
             settings.AudioBitrate = int.Parse(AudioBitrateInput.Text);
+            settings.Channels = (byte)ChannelsComboBox.SelectedIndex;
+            settings.SampleRates = (byte)CodecComboBox.SelectedIndex;
+            settings.MergeAudioTracks = (bool)MergeAudioTracksCheck.IsChecked;
 
-            settings.BufferFPS = fpsBuffer;
-            settings.BufferVideoBitrate = videoBitrateBuffer;
-            settings.BufferAudioBitrate = audioBitrateBuffer;
-            settings.BufferSampleRates = sampleRatesBuffer;
+            // Пресеты
+            settings.BufferFPS = bufferFPS;
+            settings.BufferVideoBitrate = bufferVideoBitrate;
+            settings.BufferAudioBitrate = bufferAudioBitrate;
+            settings.BufferSampleRates = bufferSampleRates;
+            settings.BufferChannels = bufferChannels;
 
+            // Окно
             if (!isFullScreen)
             {
                 settings.WindowWidth = (short)Width;
@@ -1341,11 +1487,6 @@ namespace VideoEditor
             }
 
             settings.Save();
-        }
-
-        private void InputFilePath_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
         }
     }
 }

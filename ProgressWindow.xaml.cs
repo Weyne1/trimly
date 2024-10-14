@@ -72,9 +72,8 @@ namespace VideoEditor
             {
                 if (s is Clock clock)
                 {
-                    double currentProgress = (double)clock.CurrentTime.Value.Ticks / clock.NaturalDuration.TimeSpan.Ticks;
-                    double currentValue = fromValue + (toValue - fromValue) * currentProgress;
-                    Percent.Text = $"{currentValue:0.00}%";
+                    double currentProgress = ProgressBar.Value;
+                    Percent.Text = $"{currentProgress:0.00}%";
                 }
             };
             Percent.BeginAnimation(OpacityProperty, textAnimation);
@@ -97,13 +96,13 @@ namespace VideoEditor
                     process.Kill();
                     process.WaitForExit();
 
-                    ChangeTitle("Рендеринг [Отмена]");
+                    ChangeTitle("Rendering [Cancel]");
                     mainWindow.StopRender();
-                    mainWindow.ChangeRenderText("[отменён] " + VideoTitle.Text);
+                    mainWindow.ChangeRenderText("[Canceled] " + VideoTitle.Text);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при завершении процесса ffmpeg: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error when terminating ffmpeg process: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }

@@ -16,7 +16,7 @@ namespace VideoEditor
 
             if (!File.Exists(ffmpegPath) || !File.Exists(ffprobePath))
             {
-                MessageBox.Show("Пожалуйста, установите FFmpeg и поместите исполняемые файлы ffmpeg.exe и ffprobe.exe в ту же папку, где находится эта программа.", "FFmpeg не найден", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBox.Show("Please install FFmpeg and place the executable files ffmpeg.exe and ffprobe.exe in the same folder where this program is located.", "FFmpeg not found", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 Shutdown();
             }
         }

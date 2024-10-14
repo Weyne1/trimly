@@ -22,6 +22,7 @@ namespace VideoEditor
         public byte Codec { get; set; }
         public byte Type { get; set; }
         public byte SampleRates { get; set; }
+        public byte Channels { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public short FPS { get; set; }
@@ -31,6 +32,7 @@ namespace VideoEditor
         public int BufferVideoBitrate { get; set; }
         public int BufferAudioBitrate { get; set; }
         public short BufferSampleRates { get; set; }
+        public short BufferChannels { get; set; }
         public short WindowWidth { get; set; }
         public short WindowHeight { get; set; }
 

@@ -59,10 +59,12 @@
             <Setter Property="AllowDrop" Value="true"/>
             <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
             <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="SelectionBrush" Value="#aa72b5"/>
+            <Setter Property="SelectionOpacity" Value="0.4"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" CornerRadius="5" SnapsToDevicePixels="True">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1.5" CornerRadius="7" SnapsToDevicePixels="True">
                             <ScrollViewer Style="{DynamicResource ScrollViewerStyle1}" Margin="3,0,0,0" x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -70,10 +72,10 @@
                                 <Setter Property="Opacity" TargetName="border" Value="0.56"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBox.MouseOver.Border}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="#aa67b8"/>
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="true">
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBox.Focus.Border}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="#E873FF"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -89,6 +91,7 @@
                 </MultiTrigger>
             </Style.Triggers>
         </Style>
+
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -115,11 +118,11 @@
         <SolidColorBrush x:Key="OptionMark.MouseOver.Background" Color="#B3B3B3"/>
         <SolidColorBrush x:Key="OptionMark.MouseOver.Border" Color="#B3B3B3"/>
         <SolidColorBrush x:Key="OptionMark.MouseOver.Glyph" Color="#FF212121"/>
-        <SolidColorBrush x:Key="OptionMark.Pressed.Background" Color="#3C77DD"/>
-        <SolidColorBrush x:Key="OptionMark.Pressed.Border" Color="#3C77DD"/>
+        <SolidColorBrush x:Key="OptionMark.Pressed.Background" Color="#E873FF"/>
+        <SolidColorBrush x:Key="OptionMark.Pressed.Border" Color="#E873FF"/>
         <SolidColorBrush x:Key="OptionMark.Pressed.Glyph" Color="#FF212121"/>
         <SolidColorBrush x:Key="OptionMark.Disabled.Background" Color="#232323"/>
-        <SolidColorBrush x:Key="OptionMark.Disabled.Border" Color="#3C77DD"/>
+        <SolidColorBrush x:Key="OptionMark.Disabled.Border" Color="#aa72b5"/>
         <SolidColorBrush x:Key="OptionMark.Disabled.Glyph" Color="#FF707070"/>
         <Style x:Key="CheckBoxStyle1" TargetType="{x:Type CheckBox}">
             <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
@@ -194,8 +197,8 @@
         <SolidColorBrush x:Key="Button.Static.Border" Color="#C8C8C8"/>
         <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#C8C8C8"/>
         <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#C8C8C8"/>
-        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#3C77DD"/>
-        <SolidColorBrush x:Key="Button.Pressed.Border" Color="#3C77DD"/>
+        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#E873FF"/>
+        <SolidColorBrush x:Key="Button.Pressed.Border" Color="#E873FF"/>
         <SolidColorBrush x:Key="Button.Disabled.Background" Color="#232323"/>
         <SolidColorBrush x:Key="Button.Disabled.Border" Color="#5B5B5B"/>
         <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383"/>
@@ -204,7 +207,7 @@
             <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
             <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderThickness" Value="1.4"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Padding" Value="1"/>
@@ -277,16 +280,24 @@
         <SolidColorBrush x:Key="SliderThumb.Track.Border" Color="#FFD6D6D6"/>
         <ControlTemplate x:Key="SliderThumbHorizontalDefault" TargetType="{x:Type Thumb}">
             <Grid HorizontalAlignment="Center" UseLayoutRounding="True" VerticalAlignment="Center">
-                <Path x:Name="grip" Data="M 0,0 C0,0 11,0 11,0 11,0 11,18 11,18 11,18 0,18 0,18 0,18 0,0 0,0 z" Fill="{StaticResource SliderThumb.Static.Background}" Stroke="{StaticResource SliderThumb.Static.Border}" SnapsToDevicePixels="True" Stretch="Fill" StrokeThickness="1" UseLayoutRounding="True" VerticalAlignment="Center"/>
+                <Path x:Name="grip" 
+              Data="M 0,4 A4,4 0 0 1 4,0 L7,0 A4,4 0 0 1 11,4 L11,14 A4,4 0 0 1 7,18 L4,18 A4,4 0 0 1 0,14 Z" 
+              Fill="{StaticResource SliderThumb.Static.Background}" 
+              Stroke="{StaticResource SliderThumb.Static.Border}" 
+              SnapsToDevicePixels="True" Stretch="Fill" StrokeThickness="1" UseLayoutRounding="True" 
+              VerticalAlignment="Center"/>
             </Grid>
             <ControlTemplate.Triggers>
+                <Trigger Property="IsKeyboardFocused" Value="true">
+                    <Setter Property="Stroke" TargetName="grip" Value="#E873FF"/>
+                </Trigger>
                 <Trigger Property="IsMouseOver" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Background}"/>
-                    <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Border}"/>
+                    <Setter Property="Stroke" TargetName="grip" Value="#aa72b5"/>
                 </Trigger>
                 <Trigger Property="IsDragging" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Pressed.Background}"/>
-                    <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.Pressed.Border}"/>
+                    <Setter Property="Stroke" TargetName="grip" Value="#E873FF"/>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="false">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Disabled.Background}"/>
@@ -301,11 +312,11 @@
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Background}"/>
-                    <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Border}"/>
+                    <Setter Property="Stroke" TargetName="grip" Value="#aa72b5"/>
                 </Trigger>
                 <Trigger Property="IsDragging" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Pressed.Background}"/>
-                    <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.Pressed.Border}"/>
+                    <Setter Property="Stroke" TargetName="grip" Value="#E873FF"/>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="false">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Disabled.Background}"/>
@@ -320,11 +331,11 @@
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Background}"/>
-                    <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Border}"/>
+                    <Setter Property="Stroke" TargetName="grip" Value="#aa72b5"/>
                 </Trigger>
                 <Trigger Property="IsDragging" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Pressed.Background}"/>
-                    <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.Pressed.Border}"/>
+                    <Setter Property="Stroke" TargetName="grip" Value="#E873FF"/>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="false">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Disabled.Background}"/>
@@ -342,11 +353,24 @@
                     </Grid.RowDefinitions>
                     <TickBar x:Name="TopTick" Fill="{TemplateBinding Foreground}" Height="4" Margin="0,0,0,2" Placement="Top" Grid.Row="0" Visibility="Collapsed"/>
                     <TickBar x:Name="BottomTick" Fill="{TemplateBinding Foreground}" Height="4" Margin="0,2,0,0" Placement="Bottom" Grid.Row="2" Visibility="Collapsed"/>
-                    <Border x:Name="TrackBackground" Background="{StaticResource SliderThumb.Track.Background}" BorderBrush="{StaticResource SliderThumb.Track.Border}" BorderThickness="1" Height="4.0" Margin="5,0" Grid.Row="1" VerticalAlignment="center">
+                    <Border x:Name="TrackBackground" 
+                            Background="{StaticResource SliderThumb.Track.Background}" 
+                            BorderBrush="{StaticResource SliderThumb.Track.Border}" 
+                            BorderThickness="1" 
+                            CornerRadius="2"
+                            Height="4.0" 
+                            Margin="5,0" 
+                            Grid.Row="1" 
+                            VerticalAlignment="center">
                         <Canvas Margin="-6,-1">
-                            <Rectangle x:Name="PART_SelectionRange" Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Height="4.0" Visibility="Hidden"/>
+                            <Rectangle x:Name="PART_SelectionRange" 
+                                       Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" 
+                                       Height="4.0" 
+                                       RadiusX="2" RadiusY="2"
+                                       Visibility="Hidden"/>
                         </Canvas>
                     </Border>
+
                     <Track x:Name="PART_Track" Grid.Row="1">
                         <Track.DecreaseRepeatButton>
                             <RepeatButton Command="{x:Static Slider.DecreaseLarge}" Style="{StaticResource RepeatButtonTransparent}"/>
@@ -390,11 +414,11 @@
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Background}"/>
-                    <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Border}"/>
+                    <Setter Property="Stroke" TargetName="grip" Value="#aa72b5"/>
                 </Trigger>
                 <Trigger Property="IsDragging" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Pressed.Background}"/>
-                    <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.Pressed.Border}"/>
+                    <Setter Property="Stroke" TargetName="grip" Value="#E873FF"/>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="false">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Disabled.Background}"/>
@@ -409,11 +433,11 @@
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Background}"/>
-                    <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Border}"/>
+                    <Setter Property="Stroke" TargetName="grip" Value="#aa72b5"/>
                 </Trigger>
                 <Trigger Property="IsDragging" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Pressed.Background}"/>
-                    <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.Pressed.Border}"/>
+                    <Setter Property="Stroke" TargetName="grip" Value="#E873FF"/>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="false">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Disabled.Background}"/>
@@ -428,11 +452,11 @@
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Background}"/>
-                    <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Border}"/>
+                    <Setter Property="Stroke" TargetName="grip" Value="#aa72b5"/>
                 </Trigger>
                 <Trigger Property="IsDragging" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Pressed.Background}"/>
-                    <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.Pressed.Border}"/>
+                    <Setter Property="Stroke" TargetName="grip" Value="#E873FF"/>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="false">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Disabled.Background}"/>
@@ -521,16 +545,41 @@
             <Border x:Name="PART_ContentHost" Focusable="False" Background="Transparent" BorderBrush="Transparent" BorderThickness="0"/>
         </ControlTemplate>
 
-        <!-- Ресурс для ComboBoxToggleButton -->
+        <!-- Обновленный шаблон для стрелочки в ToggleButton -->
         <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Border Grid.Row="0" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Grid.RowSpan="2"/>
-                <Path x:Name="Arrow" Data="M 0 0 L 4 4 L 8 0 Z" Fill="#c8c8c8" HorizontalAlignment="Right" Margin="0,10,7,0" VerticalAlignment="Top" Grid.RowSpan="2"/>
-            </Grid>
+            <Border x:Name="templateRoot" 
+            BorderBrush="{TemplateBinding BorderBrush}" 
+            BorderThickness="{TemplateBinding BorderThickness}" 
+            Background="{TemplateBinding Background}" 
+            CornerRadius="8"
+                SnapsToDevicePixels="True">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Стрелочка для раскрытия выпадающего списка -->
+                    <Path x:Name="arrow" 
+                  Grid.Column="1" 
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center"
+                  Data="M 0 0 L 4 4 L 8 0 Z"
+                  Fill="#d1d1d1" Margin="5,0,5,0"/>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="templateRoot" Property="Background" Value="#343434"/>
+                    <Setter TargetName="templateRoot" Property="BorderBrush" Value="#CCCCCC"/>
+                    <Setter TargetName="arrow" Property="Fill" Value="#FFC8C8C8"/>
+                    <!-- Меняем цвет стрелочки при наведении -->
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                    <Setter TargetName="arrow" Property="Fill" Value="#666666"/>
+                    <!-- Цвет стрелочки при отключенном состоянии -->
+                </Trigger>
+            </ControlTemplate.Triggers>
         </ControlTemplate>
 
         <!-- Стиль для ComboBox -->
@@ -540,40 +589,45 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ComboBox}">
                         <Grid>
+                            <!-- Используем кастомный шаблон для ToggleButton с CornerRadius и поправленной стрелочкой -->
                             <ToggleButton Name="ToggleButton" 
-                                          Template="{StaticResource ComboBoxToggleButton}" 
-                                          Grid.Column="2" 
-                                          Focusable="false"
-                                          IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" 
-                                          ClickMode="Press"
-                                          Background="#232323"
-                                          BorderBrush="#FFC8C8C8"
-                                          BorderThickness="2"/>
+                                  Template="{StaticResource ComboBoxToggleButton}" 
+                                  Grid.Column="2" 
+                                  Focusable="false"
+                                  IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" 
+                                  ClickMode="Press"
+                                  Background="#232323"
+                                  BorderBrush="#FFC8C8C8"
+                                  BorderThickness="1.5"/>
+                            <!-- Контент, когда ComboBox закрыт -->
                             <ContentPresenter Name="ContentSite" 
-                                              IsHitTestVisible="False" 
-                                              Content="{TemplateBinding SelectionBoxItem}" 
-                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                              Margin="5,0,0,0"
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Left"/>
+                                IsHitTestVisible="False" 
+                                Content="{TemplateBinding SelectionBoxItem}" 
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                Margin="7,-1,0,0"
+                                VerticalAlignment="Center" 
+                                HorizontalAlignment="Left"/>
+                            <!-- Текстовое поле для редактирования (когда ComboBox Editable) -->
                             <TextBox x:Name="PART_EditableTextBox"
-                                     Style="{x:Null}" 
-                                     Template="{StaticResource ComboBoxTextBox}" 
-                                     HorizontalAlignment="Left" 
-                                     VerticalAlignment="Center" 
-                                     Background="Transparent"
-                                     Visibility="Hidden"
-                                     IsReadOnly="{TemplateBinding IsReadOnly}"
-                                     Foreground="#FFC8C8C8"/>
+                                Style="{x:Null}" 
+                                Template="{StaticResource ComboBoxTextBox}" 
+                                HorizontalAlignment="Left" 
+                                VerticalAlignment="Center" 
+                                Background="Transparent"
+                                Visibility="Hidden"
+                                IsReadOnly="{TemplateBinding IsReadOnly}"
+                                Foreground="#FFC8C8C8"/>
+                            <!-- Выпадающий список -->
                             <Popup Name="Popup" 
-                                   Placement="Bottom"
-                                   IsOpen="{TemplateBinding IsDropDownOpen}" 
-                                   AllowsTransparency="True" 
-                                   Focusable="False" 
-                                   PopupAnimation="Slide">
+                                Placement="Bottom"
+                                IsOpen="{TemplateBinding IsDropDownOpen}" 
+                                AllowsTransparency="True" 
+                                Focusable="False" 
+                                PopupAnimation="Slide">
                                 <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                    <Border x:Name="DropDownBorder" BorderThickness="2" BorderBrush="#FFC8C8C8">
+                                    <Border x:Name="DropDownBorder" BorderThickness="2" BorderBrush="#FFC8C8C8" CornerRadius="8">
+                                        <!-- Добавлено скругление углов -->
                                         <Border.Background>
                                             <SolidColorBrush Color="#343434"/>
                                         </Border.Background>
@@ -590,6 +644,7 @@
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                <Setter TargetName="ToggleButton" Property="BorderBrush" Value="#666666"/>
                             </Trigger>
                             <Trigger Property="IsGrouping" Value="True">
                                 <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
@@ -611,13 +666,37 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Стиль для ComboBoxItem с исправленными цветами наведения -->
         <Style TargetType="{x:Type ComboBoxItem}">
             <Setter Property="Foreground" Value="#FFC8C8C8"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <!-- Установим фон по умолчанию -->
+            <Setter Property="Focusable" Value="False"/>
+            <!-- Отключаем фокус -->
+
+            <Style.Triggers>
+                <!-- Наведение на элемент, который НЕ выбран -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#aa72b5"/>
+                    <!-- Цвет для элемента при наведении -->
+                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                </Trigger>
+                <!-- Выбранный элемент -->
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#E873FF"/>
+                    <!-- Цвет для выбранного элемента -->
+                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
 
+
+
+
     </Window.Resources>
-    <Grid Background="#232323" x:Name="MainGrid">
+    <Grid Background="#1E1E1E" x:Name="MainGrid">
         <Grid.Effect>
             <DropShadowEffect Color="Black" Direction="270" ShadowDepth="0" BlurRadius="10"/>
         </Grid.Effect>
@@ -626,10 +705,10 @@
             <RowDefinition Height="3"/>
             <RowDefinition Height="15" MinHeight="15" MaxHeight="20"/>
             <RowDefinition x:Name="videoHeightRow" MinHeight="270" Height="282*"/>
-            <RowDefinition Height="21*" MinHeight="20" MaxHeight="25"/>
-            <RowDefinition Height="235*" MinHeight="235" MaxHeight="235"/>
-            <RowDefinition Height="21*" MinHeight="20" MaxHeight="25"/>
-            <RowDefinition Height="94*" MinHeight="90" MaxHeight="100"/>
+            <RowDefinition Height="21*" MinHeight="21" MaxHeight="21"/>
+            <RowDefinition Height="170*" MinHeight="170" MaxHeight="170"/>
+            <RowDefinition Height="21*" MinHeight="21" MaxHeight="21"/>
+            <RowDefinition Height="170*" MinHeight="170" MaxHeight="170"/>
             <RowDefinition Height="33.003"/>
         </Grid.RowDefinitions>
 
@@ -643,28 +722,28 @@
         </Grid.ColumnDefinitions>
 
         <Rectangle x:Name="DecorBorder1" Margin="9,0,6,0" Grid.Row="2" Grid.Column="2"
-           Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5"/>
+           Stroke="#545454" StrokeThickness="1" RadiusX="5" RadiusY="5"/>
 
         <!--Панель выбора источника и выходного файла-->
 
         <StackPanel Margin="5,15,5,0" Grid.Column="2" Grid.Row="2">
-            <TextBlock x:Name="InputFilePathText" Margin="30,0,0,3" Text="Исходное видео:" Grid.Column="3" Grid.Row="3" 
-                       Foreground="#9ACFFF" FontFamily="Exo 2 SemiBold" FontSize="14"/>
+            <TextBlock x:Name="InputFilePathText" Margin="40,0,0,3" Text="Input video file:" Grid.Column="3" Grid.Row="3" 
+                       Foreground="#E873FF" FontFamily="Exo 2 SemiBold" FontSize="14"/>
             <StackPanel Orientation="Horizontal">
                 <TextBox FontStretch="Condensed" Style="{DynamicResource TextBoxStyle1}" x:Name="InputFilePath" 
-                         AllowDrop="true" Drop="VideoDrop" Width="300" IsReadOnly="True" Margin="28,0,5,0" 
-                         Height="24" FontFamily="Exo 2 SemiBold" Foreground="#FF7F7F7F" FontSize="14" Text="" TextChanged="InputFilePath_TextChanged"/>
+                         AllowDrop="true" Drop="VideoDrop" Width="300" IsReadOnly="True" Margin="38,0,5,0" 
+                         Height="24" FontFamily="Exo 2 SemiBold" Foreground="#FF7F7F7F" FontSize="14" Text=""/>
                 <Button Margin="5,0,5,0" Style="{DynamicResource ButtonStyle1}" AllowDrop="true" 
-                        Drop="VideoDrop" Content="Выбрать файл..." Click="SelectInputFile_Click" MinWidth="120" 
-                        FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" FontSize="14"/>
+                        Drop="VideoDrop" Content="Select file..." Click="SelectInputFile_Click" MinWidth="100" 
+                        FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" FontSize="14" Width="94"/>
             </StackPanel>
-            <TextBlock x:Name="OutputFilePathText" Margin="30,5,0,3" Text="Путь для нового файла:" Foreground="#9ACFFF" FontFamily="Exo 2 SemiBold" FontSize="14"/>
+            <TextBlock x:Name="OutputFilePathText" Margin="40,5,0,3" Text="Output video path:" Foreground="#E873FF" FontFamily="Exo 2 SemiBold" FontSize="14"/>
             <StackPanel Orientation="Horizontal">
                 <TextBox FontStretch="Normal" Style="{DynamicResource TextBoxStyle1}" x:Name="OutputFilePath" 
-                         Width="300" IsReadOnly="True" Margin="28,0,5,0" Height="24" FontFamily="Exo 2 SemiBold"
+                         Width="300" IsReadOnly="True" Margin="38,0,5,0" Height="24" FontFamily="Exo 2 SemiBold"
                          Foreground="#FF7F7F7F" FontSize="14"/>
-                <Button Margin="5,0,5,0" Style="{DynamicResource ButtonStyle1}" Content="Выбрать путь..."
-                        Click="SelectOutputFile_Click" MinWidth="120" FontFamily="Exo 2 SemiBold" Foreground="#FFBEBEBE" FontSize="14"/>
+                <Button Margin="5,0,5,0" Style="{DynamicResource ButtonStyle1}" Content="Select path..."
+                        Click="SelectOutputFile_Click" MinWidth="100" FontFamily="Exo 2 SemiBold" Foreground="#FFBEBEBE" FontSize="14"/>
             </StackPanel>
 
             <Grid Grid.ColumnSpan="3" Margin="0,10,3,1" Grid.RowSpan="2" Grid.Row="5" Height="70">
@@ -675,7 +754,7 @@
 
                 <StackPanel>
                     <TextBlock Width="144" Height="25" FontSize="15" FontFamily="Exo 2 SemiBold" 
-                       Margin="0,3,5,0" Foreground="#FFC8C8C8" TextAlignment="Center"><Run Language="ru-ru" Text="Кодировщик:"/></TextBlock>
+                       Margin="0,3,5,0" Foreground="#FFC8C8C8" TextAlignment="Center">Codec:</TextBlock>
                     <ComboBox Margin="40,5,30,0" x:Name="CodecComboBox" SelectedIndex="0" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" Style="{StaticResource CustomComboBoxStyle}" Height="28">
                         <ComboBoxItem Content="CPU X264" />
                         <ComboBoxItem Content="NVIDIA H.264 NVENC" />
@@ -685,151 +764,167 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Margin="0,0,10,0">
-                    <TextBlock Margin="0,3,0,0" Width="138" Height="25" FontSize="15" FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Center"><Run Language="ru-ru" Text="Тип файла:"/></TextBlock>
+                    <TextBlock Margin="0,3,0,0" Width="138" Height="25" FontSize="15" FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Center">File type:</TextBlock>
                     <ComboBox Margin="30,5,30,0" x:Name="TypeComboBox" SelectionChanged="TypeComboBox_SelectionChanged" SelectedIndex="0" FontFamily="Exo 2 SemiBold" FontSize="14" 
                       Foreground="#FFC8C8C8" Style="{StaticResource CustomComboBoxStyle}" Height="28">
                         <ComboBoxItem Content="MP4" />
                         <ComboBoxItem Content="AVI" />
                         <ComboBoxItem Content="MKV" />
                         <ComboBoxItem Content="MOV" />
+                        <ComboBoxItem Content="MP3 - Audio" />
+                        <ComboBoxItem Content="AAC - Audio" />
                     </ComboBox>
                 </StackPanel>
             </Grid>
 
             <StackPanel Margin="10,5,0,5" Orientation="Horizontal" HorizontalAlignment="Left">
-                <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="4" Width="91" Height="23" FontSize="14" 
-                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right"><Run Language="ru-ru" Text="Громкость: "/></TextBlock>
+                <TextBlock Margin="7,0,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="4" Width="69" Height="24" FontSize="14" 
+                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right">Volume:</TextBlock>
 
                 <Slider Margin="0,3,0,0" Style="{DynamicResource SliderStyle1}" 
                     x:Name="VolumeSlider" ValueChanged="VolumeSlider_ValueChanged" Height="25" 
                     SmallChange="1" Maximum="200" Value="100" Width="100"/>
 
                 <TextBlock x:Name="VolumeText" Margin="5,0,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="4" Width="39" Height="24" FontSize="14" 
-                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8"><Run Language="ru-ru" Text="100%"/></TextBlock>
+                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8"><Run Text="100%"/></TextBlock>
 
-                <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="4" Width="71" Height="24" FontSize="14" 
-                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right"><Run Language="ru-ru" Text="Скорость: "/></TextBlock>
+                <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="4" Width="79" Height="24" FontSize="14" 
+                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right">Speed:</TextBlock>
 
                 <Slider Margin="0,3,0,0" Style="{DynamicResource SliderStyle1}" 
                     x:Name="SpeedSlider" ValueChanged="SpeedSlider_ValueChanged" Height="25" 
                     SmallChange="0.1" Maximum="2" Minimum="0.5" Value="1.0" Width="100"/>
 
                 <TextBlock x:Name="SpeedText" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="4" Height="23" FontSize="14" 
-                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8"><Run Language="ru-ru" Text="1x"/></TextBlock>
+                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8"><Run Text="1x"/></TextBlock>
             </StackPanel>
 
-            <CheckBox VerticalAlignment="Stretch" Style="{DynamicResource CheckBoxStyle1}" Content="Объединить аудиодорожки, если их несколько" HorizontalAlignment="Left" x:Name="MergeAudioTracksCheck" Unchecked="MergeAudioTracksCheck_Checked" Checked="MergeAudioTracksCheck_Checked" IsChecked="true" 
-                      Grid.Column="2" Grid.Row="5" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" Margin="30,5,0,0" />
 
         </StackPanel>
 
         <!--Панель параметров видео-->
-        <Rectangle x:Name="DecorBorder2" Grid.Row="3" Grid.Column="2"
-           Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5" Margin="9,21,6,1" Grid.RowSpan="2"/>
+        <Rectangle x:Name="DecorBorder2" Grid.Row="4" Grid.Column="2"
+           Stroke="#545454" StrokeThickness="1" RadiusX="5" RadiusY="5" Margin="5,1,5,1"/>
+        <Rectangle Grid.Row="3" Grid.Column="2" Fill="#1E1E1E" Margin="23,10,354,163" Grid.RowSpan="2"/>
+        <TextBlock Text="Video Settings" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="2" Grid.Row="3" Height="21" Width="100" FontSize="14" 
+   FontFamily="Exo 2 SemiBold" Foreground="#545454" TextAlignment="Center" Margin="30,12,0,0" Grid.RowSpan="2"/>
 
-        <StackPanel x:Name="EditParamsPanel" Grid.Column="2" Grid.Row="3" Margin="5,21,5,1" Grid.RowSpan="2">
-            <StackPanel Margin="0,10,0,0" Orientation="Horizontal" Grid.Row="2">
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
+        <StackPanel x:Name="VideoSettingsPanel" Grid.Column="2" Grid.Row="3" Margin="5,21,5,1" Grid.RowSpan="2">
+            <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,20,0,0">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal" Height="40">
                         <TextBlock Grid.Column="2" Grid.Row="3" Width="135" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                               Height="24" FontSize="14" FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right" Text="FPS:"/>
+                               FontSize="14" FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right" Text="FPS:"/>
                         <TextBox Style="{DynamicResource TextBoxStyle1}" x:Name="FPSInput" Text="60" Grid.Column="3" Grid.Row="3" 
-                             Margin="20,0,0,0" Width="69" Height="22" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8" VerticalAlignment="Center" 
+                             Margin="20,0,0,0" Width="94" Height="22" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8" VerticalAlignment="Center" 
                              TextChanged="FPSInput_TextChanged" LostFocus="FPSInput_LostFocus" MaxLength="4" MaxLines="1"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.Row="4" Width="135" Height="23" FontSize="14" 
-                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right"><Run Language="ru-ru" Text="Битрейт "/><Run Text="(kbps)"/></TextBlock>
+                    <StackPanel Orientation="Horizontal" Height="40">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.Row="4" Width="135" FontSize="14" 
+                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right">Bitrate (kbps):</TextBlock>
                         <TextBox Style="{DynamicResource TextBoxStyle1}" x:Name="VideoBitrateInput" VerticalAlignment="Center" Text="15000" Grid.Column="3" 
-                             Grid.Row="4" Width="69" Height="22" FontFamily="Exo 2 SemiBold" FontSize="15" TextChanged="VideoBitrateInput_TextChanged" 
+                             Grid.Row="4" Width="94" Height="22" FontFamily="Exo 2 SemiBold" FontSize="15" TextChanged="VideoBitrateInput_TextChanged" 
                              Margin="20,0,0,0" LostFocus="VideoBitrateInput_LostFocus" Foreground="#FFC8C8C8" MaxLines="1" MaxLength="6" AutoWordSelection="True"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
-                        <TextBlock Text="Битрейт аудио:" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.Row="5" Height="21" Width="135" FontSize="14" 
-                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right"/>
-                        <TextBox Style="{DynamicResource TextBoxStyle1}" x:Name="AudioBitrateInput" VerticalAlignment="Center" Text="256" Grid.Column="3" 
-                             Grid.Row="5" Height="22" Width="69" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8" MaxLines="1" MaxLength="3" 
-                             Margin="20,0,0,0" TextChanged="AudioBitrateInput_TextChanged" LostFocus="AudioBitrateInput_LostFocus" AutomationProperties.HelpText="Битрейт в kbps"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
-                        <TextBlock Text="Частота дискр.:" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.Row="5" Height="21" Width="135" FontSize="14" 
-                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right"/>
-                        <ComboBox Margin="20,0,0,0" x:Name="SampleRatesComboBox" SelectionChanged="TypeComboBox_SelectionChanged" SelectedIndex="0" FontFamily="Exo 2 SemiBold" FontSize="14" 
-                      Foreground="#FFC8C8C8" Style="{StaticResource CustomComboBoxStyle}" Height="22" Width="78">
-                            <ComboBoxItem Content="44,1 kHz" />
-                            <ComboBoxItem Content="48 kHz" />
-                        </ComboBox>
-                    </StackPanel>
-
                 </StackPanel>
-                <StackPanel Margin="20,2,0,0">
-                    <StackPanel HorizontalAlignment="Center">
-                        <TextBlock Margin="0,10,0,0" Grid.Column="4" Grid.Row="4" Width="193" Height="20" FontSize="15" FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Center"><Run
-                            Text="Разрешение"/><Run Language="ru-ru" Text=":"/></TextBlock>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Height="40">
+                        <TextBlock Grid.Column="4" Grid.Row="4" Width="112" Height="20" FontSize="15" FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right">Resolution:</TextBlock>
+                        <TextBox Style="{DynamicResource TextBoxStyle1}" Margin="20,0,30,0" x:Name="WidthInput" VerticalAlignment="Center" Text="1920" TextChanged="WidthTextChanged" 
+                                 LostFocus="WidthTextLostFocus" Grid.Column="4" Grid.Row="4" Width="69" Height="22" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8" Background="#FF161616" TextAlignment="Center"/>
                     </StackPanel>
-                    <StackPanel HorizontalAlignment="Center" Height="36" Orientation="Horizontal" Width="204">
-                        <TextBox Style="{DynamicResource TextBoxStyle1}" x:Name="WidthInput" VerticalAlignment="Center" Text="1920" TextChanged="WidthTextChanged" 
-                             LostFocus="WidthTextLostFocus" Grid.Column="4" Grid.Row="4" Width="53" Height="22" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8" Background="#FF161616" TextAlignment="Center"/>
-                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="4" Grid.Row="4" Width="12" Height="24" FontSize="20" FontFamily="Exo 2 ExtraBold" 
-                               Foreground="#FFC8C8C8" Margin="5,-5,0,0"><Run Language="ru-ru" Text="х"/><LineBreak/><Run Language="ru-ru"/></TextBlock>
+                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Height="40">
+                        <CheckBox  Style="{DynamicResource CheckBoxStyle1}" VerticalAlignment="Center" Content="Link" x:Name="LinkCheck" IsChecked="true" Grid.Column="5" Grid.Row="4" FontFamily="Exo 2 SemiBold" 
+                                  FontSize="14" Foreground="#FFC8C8C8" Click="LinkCheck_Click"/>
                         <TextBox Style="{DynamicResource TextBoxStyle1}" x:Name="HeightInput" VerticalAlignment="Center" Text="1080" TextChanged="HeightTextChanged" 
-                             LostFocus="HeightTextLostFocus" Grid.Column="4" Margin="5,0,0,0" Grid.Row="4" Width="53" Height="22" FontFamily="Exo 2 SemiBold" FontSize="15" 
-                             Foreground="#FFC8C8C8" TextAlignment="Center" IsEnabled="False" Grid.ColumnSpan="2"/>
-                        <CheckBox Style="{DynamicResource CheckBoxStyle1}" Content="Связь" x:Name="LinkCheck" IsChecked="true" Grid.Column="5" Grid.Row="4" Height="16" Width="64" FontFamily="Exo 2 SemiBold" 
-                              Margin="10,0,0,0" FontSize="14" Foreground="#FFC8C8C8" Click="LinkCheck_Click"/>
+                                 LostFocus="HeightTextLostFocus" Grid.Column="4" Margin="20,0,30,0" Grid.Row="4" Width="69" Height="22" FontFamily="Exo 2 SemiBold" FontSize="15" 
+                                 Foreground="#FFC8C8C8" TextAlignment="Center" IsEnabled="False" Grid.ColumnSpan="2"/>
                     </StackPanel>
-                    <TextBlock x:Name="EstimatedSizeText" Height="25" Width="149" FontFamily="Exo 2 SemiBold" 
-                            Foreground="#FF909090" HorizontalAlignment="Right" TextAlignment="Right" Margin="0,35,5,0" FontSize="14" Text="0 МБ"/>
                 </StackPanel>
             </StackPanel>
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,0">
-                <Button Margin="35,0,10,10" Style="{DynamicResource ButtonStyle1}" x:Name="CopyButton" Content="Сохранить" Click="CopyButton_Click"
-                       Height="30" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" IsEnabled="True" Width="100"/>
-                <Button Margin="10,0,15,10" Style="{DynamicResource ButtonStyle1}" x:Name="PasteButton" Content="Вставить" Click="PasteButton_Click"
-                       Height="30" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" IsEnabled="True" Width="100"/>
+            <StackPanel Orientation="Horizontal" Height="40">
+                <CheckBox VerticalAlignment="Center" Style="{DynamicResource CheckBoxStyle1}" Content="Setup automaticlly" x:Name="AutoParamCheck" IsChecked="true" 
+                          Grid.Column="2" Grid.Row="5" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" Margin="40,4,0,0" Width="210" />
+                <Button Margin="20,0,0,0" Style="{DynamicResource ButtonStyle1}" x:Name="SaveVideoParamsButton" Content="Save" Click="SaveVideoParamsButton_Click"
+                        Height="24" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" IsEnabled="True" Width="80"/>
+                <Button Margin="20,0,30,0" Style="{DynamicResource ButtonStyle1}" x:Name="PasteVideoParamsButton" Content="Paste" Click="PasteVideoParamsButton_Click"
+                        Height="24" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" IsEnabled="True" Width="80"/>
             </StackPanel>
-
-            <CheckBox VerticalAlignment="Stretch" Style="{DynamicResource CheckBoxStyle1}" Content="Подставлять метаданные автоматически" HorizontalAlignment="Left" x:Name="AutoParamCheck" IsChecked="true" 
-                      Grid.Column="2" Grid.Row="5" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" Margin="35,4,0,0" />
-
         </StackPanel>
 
 
         <Rectangle x:Name="DecorBorder3" Grid.Row="5" Grid.Column="2"
-            Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5" Margin="5,21,5,0" Grid.RowSpan="2"/>
+            Stroke="#545454"  StrokeThickness="1" RadiusX="5" RadiusY="5" Margin="5,21,5,0" Grid.RowSpan="2"/>
+        <Rectangle Grid.Row="5" Grid.Column="2" Fill="#1E1E1E" Margin="23,10,354,163" Grid.RowSpan="2"/>
+        <TextBlock Text="Audio Settings" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="2" Grid.Row="5" Height="21" Width="100" FontSize="14" 
+           FontFamily="Exo 2 SemiBold" Foreground="#545454" TextAlignment="Center" Margin="30,11,0,0" Grid.RowSpan="2"/>
 
-        <StackPanel x:Name="HelpPanel" Grid.Column="2" Grid.Row="5" Margin="5,21,5,0" Grid.RowSpan="2">
-            <TextBlock Margin="20,10,0,0" HorizontalAlignment="Left" Width="460" FontFamily="Exo 2 SemiBold" Foreground="DimGray" FontSize="13" Height="70">
-            <Run Text="- Для обрезки используйте клавиши [I] и [O]"/>
-                <LineBreak/>
-            <Run Language="ru-ru" Text="- Управление воспроизведением - [SPACE] или [K]"/>
-                <LineBreak/>
-            <Run Language="ru-ru" Text="- Зум/сброс зума - [Z] и [X]"/>
-                <LineBreak/>
-            <Run Language="ru-ru" Text="- Перемотка: на 5 сек. - [J] и [L]; покадровая - стрелочки"/>
-            </TextBlock>
+        <StackPanel x:Name="AudioSettingsPAnel" Grid.Column="2" Grid.Row="5" Margin="5,21,5,0" Grid.RowSpan="2">
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal" Height="40">
+                        <TextBlock Text="Channels:" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.Row="5" Width="135" FontSize="14" 
+                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right"/>
+                        <ComboBox Margin="20,0,0,0" x:Name="ChannelsComboBox" SelectionChanged="TypeComboBox_SelectionChanged" SelectedIndex="0" FontFamily="Exo 2 SemiBold" FontSize="14" 
+                              Foreground="#FFC8C8C8" Style="{StaticResource CustomComboBoxStyle}" Height="24" Width="94">
+                            <ComboBoxItem Content="Stereo" />
+                            <ComboBoxItem Content="Mono" />
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Height="40">
+                        <TextBlock Text="Sample rates:" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.Row="5" Width="135" FontSize="14" 
+                                   FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right"/>
+                        <ComboBox Margin="20,0,0,0" x:Name="SampleRatesComboBox" SelectionChanged="TypeComboBox_SelectionChanged" SelectedIndex="0" FontFamily="Exo 2 SemiBold" FontSize="14" 
+                                  Foreground="#FFC8C8C8" Style="{StaticResource CustomComboBoxStyle}" Height="24" Width="94">
+                            <ComboBoxItem Content="48.000 Hz"/>
+                            <ComboBoxItem Content="44.100 Hz"/>
+                            <ComboBoxItem Content="32.000 Hz"/>
+                            <ComboBoxItem Content="22.050 Hz"/>
+                            <ComboBoxItem Content="16.000 Hz"/>
+                            <ComboBoxItem Content="11.025 Hz"/>
+                            <ComboBoxItem Content="8.000 Hz"/>
+                        </ComboBox>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Height="40">
+                        <TextBlock Text="Bitrate:" VerticalAlignment="Center" Grid.Column="2" Grid.Row="5" FontSize="14" 
+                               FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8" TextAlignment="Right" Width="111"/>
+                        <TextBox Style="{DynamicResource TextBoxStyle1}" x:Name="AudioBitrateInput" VerticalAlignment="Center" Text="256" Grid.Column="3" 
+                                 Grid.Row="5" Height="22" Width="69" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8" MaxLines="1" MaxLength="3" 
+                                 Margin="20,0,30,0" TextChanged="AudioBitrateInput_TextChanged" LostFocus="AudioBitrateInput_LostFocus" AutomationProperties.HelpText="Битрейт в kbps"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Height="40">
+                <CheckBox VerticalAlignment="Center" Style="{DynamicResource CheckBoxStyle1}" Content="Merge audio tracks" x:Name="MergeAudioTracksCheck" Unchecked="MergeAudioTracksCheck_Checked" Checked="MergeAudioTracksCheck_Checked" IsChecked="true" 
+                          Grid.Column="2" Grid.Row="5" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" Margin="40,5,0,0" Width="210" />
+                <Button Margin="20,0,0,0" Style="{DynamicResource ButtonStyle1}" x:Name="SaveAudioParamsButton" Content="Save" Click="SaveAudioParamsButton_Click"
+                        Height="24" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" IsEnabled="True" Width="80"/>
+                <Button Margin="20,0,30,0" Style="{DynamicResource ButtonStyle1}" x:Name="PasteAudioParamsButton" Content="Paste" Click="PasteAudioParamsButton_Click"
+                        Height="24" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" IsEnabled="True" Width="80"/>
+            </StackPanel>
         </StackPanel>
         <Rectangle x:Name="DecoBorder5" Margin="5,0,5,0"
-                Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5" Grid.Column="4" Grid.Row="2"/>
+                Stroke="#545454" StrokeThickness="1" RadiusX="5" RadiusY="5" Grid.Column="4" Grid.Row="2"/>
 
 
         <!--Предпросмотр видео-->
         <Grid x:Name="MediaElementGrid" Grid.Column="4" Grid.Row="2" Margin="5,0,5,0">
             <Rectangle
+                x:Name="StrokeRectangle"
                 Fill="Transparent"
                 Stroke="#303030"
-                StrokeThickness="2"
+                StrokeThickness="1.7"
                 StrokeDashArray="10"
                 RadiusX="10"
                 RadiusY="10" Margin="19,12,18,15" Grid.Row="2" Grid.Column="4"/>
-            <Image VerticalAlignment="Center" Opacity="0.2" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="DragAndDropImage" Source="images\drag.png" Height="180" Width="180" Margin="0,-30,0,0"/>
+            <Image VerticalAlignment="Center" Opacity="0.2" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="DragAndDropImage" Source="images\video.png" Height="180" Width="180" Margin="0,0,0,0"/>
             <MediaElement 
-                VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                 AllowDrop="true" Drop="VideoDrop" 
                 x:Name="mediaElement" LoadedBehavior="Manual" 
                 UnloadedBehavior="Stop" 
-                Stretch="Uniform" Margin="6,5,4,3" />
+                Stretch="Uniform" Margin="5,5,5,5"/>
             <Image VerticalAlignment="Center" Opacity="0" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="PlayImage" Source="images\play.png" Height="60" Width="60">
                 <Image.RenderTransform>
                     <ScaleTransform ScaleX="1" ScaleY="1" />
@@ -850,13 +945,12 @@
 
         <!--Панель со слайдером-->
         <Rectangle x:Name="DecorBorder4" Margin="5,21,5,1"
-                    Stroke="#313131" StrokeThickness="2" RadiusX="5" RadiusY="5" RenderTransformOrigin="0.5,0.5" Grid.Row="3" Grid.Column="4" Grid.RowSpan="2"/>
+                    Stroke="#545454" StrokeThickness="1" RadiusX="5" RadiusY="5" RenderTransformOrigin="0.5,0.5" Grid.Row="3" Grid.Column="4" Grid.RowSpan="2"/>
 
         <StackPanel x:Name="MediaConrolPanel" Grid.Column="4" Grid.Row="3" Margin="5,21,5,1" Grid.RowSpan="2">
             <Grid Height="60">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="140" />
                 </Grid.ColumnDefinitions>
 
                 <StackPanel x:Name="FirstMarkerPanel" Orientation="Horizontal" Height="60">
@@ -866,41 +960,51 @@
                     <!--<Rectangle Margin="230,0,0,0" Width="3" Height="16" Fill="Red"></Rectangle>-->
                 </StackPanel>
 
-                <Slider Margin="12,34,0,0" Style="{DynamicResource SliderStyle1}"
+                <Slider Margin="12,34,18,0" Style="{DynamicResource SliderStyle1}"
                     PreviewMouseLeftButtonDown="TrimSlider_DragStarted" 
                     PreviewMouseLeftButtonUp="TrimSlider_DragCompleted"
                     ValueChanged="TrimSlider_ValueChanged"
                     x:Name="TrimSlider" VerticalAlignment="Top" Height="18" 
                     SmallChange="1" Maximum="0.1" Grid.Column="0" Value="0">
                 </Slider>
-
-                <TextBox VerticalAlignment="Top" Style="{DynamicResource TextBoxStyle1}" x:Name="TrimSliderText" LostFocus="TrimSliderText_LostFocus" 
-                    TextChanged="TrimSliderText_TextChanged" HorizontalAlignment="Center" Text="0:00:00:00" 
-                    FontFamily="Exo 2 SemiBold" FontSize="17" Foreground="#FFC8C8C8" MaxLines="1" MaxLength="13" Grid.Column="1" Height="24" Width="117"  Margin="0,31,0,0"/>
             </Grid>
-            <TextBlock Margin="15,0,0,0" x:Name="DurationText" HorizontalAlignment="Left" Height="24" Width="265" FontFamily="Exo 2 SemiBold" Foreground="#FF909090" 
-                FontSize="15"><Run Text="Итоговая длительность: 0:00:00"/>
-            </TextBlock>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="120"/>
+                </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Margin="30,0,10,10" Style="{DynamicResource ButtonStyle1}" x:Name="ZoomButton" Content="Зум" Click="ZoomButton_Click"
-                       Height="30" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" IsEnabled="False" Width="100"/>
-                <Button Margin="10,0,15,10" Style="{DynamicResource ButtonStyle1}" x:Name="ResetZoomButton" Content="Сброс зума" Click="ResetZoomButton_Click"
-                       Height="30" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" IsEnabled="False" Width="100"/>
+                <TextBox Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Style="{DynamicResource TextBoxStyle1}" x:Name="TrimSliderText" LostFocus="TrimSliderText_LostFocus" 
+                         TextChanged="TrimSliderText_TextChanged" Text="0:00:00:00" 
+                         FontFamily="Exo 2 SemiBold" FontSize="17" Foreground="#FFC8C8C8" MaxLines="1" MaxLength="13" Height="24" Width="117"/>
+                <Button Style="{DynamicResource ButtonStyle1}" MinWidth="80" MaxWidth="80" x:Name="ZoomButton" HorizontalAlignment="Center" Content="Zoom" Click="ZoomButton_Click" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" IsEnabled="False" Grid.Column="1"/>
+                <Button Style="{DynamicResource ButtonStyle1}" MinWidth="80" MaxWidth="80" x:Name="ResetZoomButton" HorizontalAlignment="Center" Content="Reset" Click="ResetZoomButton_Click" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" IsEnabled="False" Grid.Column="2" Margin="0,0,15,0"/>
+            </Grid>
+
+            <TextBlock Margin="0,15,0,0" x:Name="ZoomStatusText" FontSize="14" FontFamily="Exo 2 SemiBold" Foreground="#E873FF" TextAlignment="Center" TextTrimming="CharacterEllipsis" Text="Drag the video into the preview window." Width="460" />
+            <StackPanel Orientation="Horizontal" Height="40">
+
+                <TextBlock VerticalAlignment="Center" Margin="20,0,0,0" x:Name="DurationText" FontFamily="Exo 2 SemiBold" Foreground="#FF909090" 
+                           FontSize="15" Text="Total: 0:00:00"/>
+                <TextBlock VerticalAlignment="Center" Text=" · 0 Mb" TextAlignment="Left" x:Name="EstimatedSizeText" HorizontalAlignment="Left" FontSize="15" FontFamily="Exo 2 SemiBold" Foreground="#FF909090"/>
             </StackPanel>
 
-            <TextBlock Margin="0,10,0,0" x:Name="ZoomStatusText" HorizontalAlignment="Stretch" Width="332" Height="26" FontSize="14" FontFamily="Exo 2 SemiBold" Foreground="#50ABFF" TextAlignment="Center" TextTrimming="CharacterEllipsis" ><Run Text="Перетащите видео в окно предпросмотра."/></TextBlock>
 
-            <CheckBox VerticalAlignment="Bottom" Style="{DynamicResource CheckBoxStyle1}" Content="Отображать кадры при перемотке" HorizontalAlignment="Left" x:Name="PrewievsOnDraggingCheck" IsChecked="true" 
-          Grid.Column="2" Grid.Row="5" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" Margin="35,35,0,0" />
+
         </StackPanel>
 
 
         <!--Кнопка рендера и рендер текст-->
-        <StackPanel x:Name="MediaStatePanel" VerticalAlignment="Center" Margin="5,0,5,0" Grid.Column="4" Grid.Row="6" Height="90">
-            <TextBlock Margin="0,20,0,0" x:Name="LastRenderedVideoText" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Cursor="Hand" MouseLeftButtonDown="ViewRenderedVideo" Width="203" Height="26" FontSize="14" FontFamily="Exo 2 SemiBold" Foreground="#50ABFF" TextAlignment="Center" TextTrimming="CharacterEllipsis" IsEnabled="False"><Run Text="[100%] - VideoName.mp4"/></TextBlock>
-            <Button Margin="30,10,30,10" Style="{DynamicResource ButtonStyle1}" x:Name="RenderButton" Content="Отрендерить" Click="RenderButton_Click" 
-                       MaxWidth="200" Height="30" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8" IsEnabled="False"/>
+        <StackPanel x:Name="MediaStatePanel" Margin="5,0,5,0" Grid.Column="4" VerticalAlignment="Center" Grid.Row="6" Height="120">
+            <TextBlock Margin="0,10,0,0" x:Name="LastRenderedVideoText" HorizontalAlignment="Stretch" Cursor="Hand" MouseLeftButtonDown="ViewRenderedVideo" Width="332" FontSize="14" FontFamily="Exo 2 SemiBold" Foreground="#E873FF" TextAlignment="Center" TextTrimming="CharacterEllipsis" IsEnabled="False"><Run Text="[100%] - VideoName.mp4"/></TextBlock>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="70">
+                <Button Style="{DynamicResource ButtonStyle1}" x:Name="HelpButton" Content="Hotkeys" Click="HelpButton_Click"
+                        MinWidth="150" MaxWidth="200" Height="30" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8"/>
+                <Button Margin="20,0,0,0" Style="{DynamicResource ButtonStyle1}" x:Name="RenderButton" Content="Render" Click="RenderButton_Click" 
+                        MinWidth="150" MaxWidth="200" Height="30" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8" IsEnabled="False"/>
+            </StackPanel>
+            <CheckBox Style="{DynamicResource CheckBoxStyle1}" HorizontalAlignment="Center" Content="Display frames when rewinding" x:Name="PrewievsOnDraggingCheck" IsChecked="true" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" />
         </StackPanel>
     </Grid>
 </Window>
