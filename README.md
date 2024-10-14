@@ -2,7 +2,7 @@
 Windows (.NET 4.8) app based on WPF & FFmpeg.
 
 > [!IMPORTANT]  
-> You need [download](https://www.gyan.dev/ffmpeg/builds/) the executable files **ffmpeg.exe**, **ffprobe.exe** and place them in the program folder.
+> You need to [download](https://www.gyan.dev/ffmpeg/builds/) the executable files **ffmpeg.exe**, **ffprobe.exe** and place them in the program folder.
 
 ### Features:
 - Trim;
