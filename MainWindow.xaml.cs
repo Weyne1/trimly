@@ -4,6 +4,8 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Media;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -32,7 +34,7 @@ using ColorConverter = System.Windows.Media.ColorConverter;
 using Path = System.IO.Path;
 using Point = System.Windows.Point;
 
-namespace VideoEditor
+namespace Trimly
 {
     public partial class MainWindow : Window
     {
@@ -72,7 +74,6 @@ namespace VideoEditor
         private double zoomOutPoint = 0;
         private float aspectRatio = 1.777f;
 
-        private MediaPlayer soundPlayer;
         private string outputType = ".mp4";
         private readonly string windowTitle = "Trimly 1.0.0";
 
@@ -88,7 +89,6 @@ namespace VideoEditor
 
             CompositionTarget.Rendering += OnWindowRendering;
             mediaElement.MediaEnded += MediaElement_MediaEnded;
-            soundPlayer = new MediaPlayer();
 
             Title = windowTitle;
             LastRenderedVideoText.Opacity = 0;
@@ -577,8 +577,7 @@ namespace VideoEditor
                 progressWindow.ChangeTitle("Rendering [Done]");
                 progressWindow.Close();
 
-                soundPlayer.Open(new Uri("sounds/render_finished.mp3", UriKind.Relative));
-                soundPlayer.Play();
+                PlaySound("Trimly.res.sounds.render_finished.wav");
 
                 // Проверяем, существует ли уже файл с таким именем
                 if (File.Exists(OutputFilePath.Text))
@@ -764,6 +763,22 @@ namespace VideoEditor
             });
         }
 
+        private void PlaySound(string resourceName)
+        {
+            // Получение текущей сборки
+            var assembly = Assembly.GetExecutingAssembly();
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream != null)
+                {
+                    using (SoundPlayer player = new SoundPlayer(stream))
+                    {
+                        player.Play();
+                    }
+                }
+            }
+        }
 
         public void EnableRenderButton()
         {
@@ -1107,7 +1122,7 @@ namespace VideoEditor
                 firstMarkerValue = TrimSlider.Value;
 
                 marker.Name = "FirstMarker";
-                marker.Source = new BitmapImage(new Uri("pack://application:,,,/images/arrow_right.png"));
+                marker.Source = new BitmapImage(new Uri("pack://application:,,,/res/images/arrow_right.png"));
                 marker.MouseLeftButtonDown += new MouseButtonEventHandler(FirstMarker_OnMouseLeftButtonDown);
                 
                 FirstMarkerPanel.Children.Add(marker);
@@ -1119,7 +1134,7 @@ namespace VideoEditor
                 secondMarkerValue = TrimSlider.Value;
 
                 marker.Name = "SecondMarker";
-                marker.Source = new BitmapImage(new Uri("pack://application:,,,/images/arrow_left.png"));
+                marker.Source = new BitmapImage(new Uri("pack://application:,,,/res/images/arrow_left.png"));
                 marker.MouseLeftButtonDown += new MouseButtonEventHandler(SecondMarker_OnMouseLeftButtonDown);
                 
                 SecondMarkerPanel.Children.Add(marker);

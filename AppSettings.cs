@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using static VideoEditor.AppSettings;
+using static Trimly.AppSettings;
 
-namespace VideoEditor
+namespace Trimly
 {
     using System;
     using System.IO;

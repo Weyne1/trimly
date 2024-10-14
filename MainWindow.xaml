@@ -1,9 +1,9 @@
-﻿<Window x:Class="VideoEditor.MainWindow"
+﻿<Window x:Class="Trimly.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:VideoEditor"
+        xmlns:local="clr-namespace:Trimly"
         mc:Ignorable="d"
         KeyUp="MainWindow_KeyUp"
         PreviewKeyDown ="Window_KeyDown"
@@ -919,13 +919,13 @@
                 StrokeDashArray="10"
                 RadiusX="10"
                 RadiusY="10" Margin="19,12,18,15" Grid.Row="2" Grid.Column="4"/>
-            <Image VerticalAlignment="Center" Opacity="0.2" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="DragAndDropImage" Source="images\video.png" Height="180" Width="180" Margin="0,0,0,0"/>
+            <Image VerticalAlignment="Center" Opacity="0.2" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="DragAndDropImage" Source="res\images\video.png" Height="180" Width="180" Margin="0,0,0,0"/>
             <MediaElement 
                 AllowDrop="true" Drop="VideoDrop" 
                 x:Name="mediaElement" LoadedBehavior="Manual" 
                 UnloadedBehavior="Stop" 
                 Stretch="Uniform" Margin="5,5,5,5"/>
-            <Image VerticalAlignment="Center" Opacity="0" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="PlayImage" Source="images\play.png" Height="60" Width="60">
+            <Image VerticalAlignment="Center" Opacity="0" Stretch="UniformToFill" HorizontalAlignment="Center" MinHeight="30" MinWidth="30" x:Name="PlayImage" Source="res\images\play.png" Height="60" Width="60">
                 <Image.RenderTransform>
                     <ScaleTransform ScaleX="1" ScaleY="1" />
                 </Image.RenderTransform>

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows;
 
-namespace VideoEditor
+namespace Trimly
 {
     public partial class App : Application
     {

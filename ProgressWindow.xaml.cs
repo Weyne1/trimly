@@ -15,7 +15,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace VideoEditor
+namespace Trimly
 {
     public partial class ProgressWindow : Window
     {
