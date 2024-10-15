@@ -14,7 +14,7 @@ Windows (.NET 4.8) app based on WPF & FFmpeg.
 - H.264 codec support for NVIDIA, AMD and Intel GPUs,
 
 ## Screenshots
-<img src="./.assets/main_screenshot.png" height="480">
+<img src="./.assets/main_screenshot.png" width="840">
 
 ## Support
 This is my second pet project. If you like this, leave a :star: (top right) and become a [stargazer](https://github.com/Weyne1/trimly/stargazers)!
