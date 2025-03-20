@@ -1,4 +1,4 @@
-# Trimly - Simple video converter
+# Trimly - Simple Video Converter
 Windows (.NET 4.8) app based on WPF & FFmpeg.
 
 > [!IMPORTANT]  
@@ -15,9 +15,6 @@ Windows (.NET 4.8) app based on WPF & FFmpeg.
 
 ## Screenshots
 <img src="./.assets/main_screenshot.png" width="840">
-
-## Support
-This is my second pet project. If you like this, leave a :star: (top right) and become a [stargazer](https://github.com/Weyne1/trimly/stargazers)!
 
 ## Credits
 This software uses code of [FFmpeg](http://ffmpeg.org) licensed under the [LGPLv2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
