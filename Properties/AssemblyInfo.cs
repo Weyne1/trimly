@@ -8,11 +8,11 @@ using System.Windows;
 // набор атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("Trimly")]
-[assembly: AssemblyDescription("Fast and simple video compressor")]
+[assembly: AssemblyDescription("Fast and simple video compressor for Windows")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Weyne1")]
 [assembly: AssemblyProduct("Trimly")]
-[assembly: AssemblyCopyright("Copyright ©  2024")]
+[assembly: AssemblyCopyright("Copyright ©  2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

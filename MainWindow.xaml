@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Trimly"
         mc:Ignorable="d"
-        KeyUp="MainWindow_KeyUp"
+        PreviewKeyUp="MainWindow_KeyUp"
         PreviewKeyDown ="Window_KeyDown"
         Title="Trimly" Height="720" Width="1070"
         MinHeight="720"
@@ -122,7 +122,7 @@
         <SolidColorBrush x:Key="OptionMark.Pressed.Border" Color="#E873FF"/>
         <SolidColorBrush x:Key="OptionMark.Pressed.Glyph" Color="#FF212121"/>
         <SolidColorBrush x:Key="OptionMark.Disabled.Background" Color="#232323"/>
-        <SolidColorBrush x:Key="OptionMark.Disabled.Border" Color="#aa72b5"/>
+        <SolidColorBrush x:Key="OptionMark.Disabled.Border" Color="#575757"/>
         <SolidColorBrush x:Key="OptionMark.Disabled.Glyph" Color="#FF707070"/>
         <Style x:Key="CheckBoxStyle1" TargetType="{x:Type CheckBox}">
             <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
@@ -538,6 +538,64 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="FirstMarkerSliderStyle" TargetType="Slider">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid>
+                            <Track x:Name="PART_Track" Maximum="{TemplateBinding Maximum}" Minimum="{TemplateBinding Minimum}" Value="{TemplateBinding Value}" VerticalAlignment="Center">
+                                <Track.Thumb>
+                                    <Thumb Width="20" Height="20" Cursor="Hand" VerticalAlignment="Center">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Image x:Name="Image" Source="pack://application:,,,/res/images/first-marker.png" Width="15" Height="24"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Width="0" Height="0" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Width="0" Height="0" />
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SecondMarkerSliderStyle" TargetType="Slider">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid>
+                            <Track x:Name="PART_Track" Maximum="{TemplateBinding Maximum}" Minimum="{TemplateBinding Minimum}" Value="{TemplateBinding Value}" VerticalAlignment="Center">
+                                <Track.Thumb>
+                                    <Thumb Width="20" Height="20" Cursor="Hand" VerticalAlignment="Center">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Image x:Name="Image" Source="pack://application:,,,/res/images/second-marker.png" Width="15" Height="24"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Width="0" Height="0" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Width="0" Height="0" />
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
         <SolidColorBrush x:Key="TextBox.Static.Background1" Color="#FFFFFFFF"/>
 
         <!-- Ресурс для ComboBoxTextBox -->
@@ -721,7 +779,7 @@
             <ColumnDefinition Width="14*" MinWidth="10" MaxWidth="30"/>
         </Grid.ColumnDefinitions>
 
-        <Rectangle x:Name="DecorBorder1" Margin="9,0,6,0" Grid.Row="2" Grid.Column="2"
+        <Rectangle x:Name="DecorBorder1" Margin="9,0,5,0" Grid.Row="2" Grid.Column="2"
            Stroke="#545454" StrokeThickness="1" RadiusX="5" RadiusY="5"/>
 
         <!--Панель выбора источника и выходного файла-->
@@ -798,6 +856,9 @@
                 <TextBlock x:Name="SpeedText" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="4" Height="23" FontSize="14" 
                                FontFamily="Exo 2 SemiBold" Foreground="#FFC8C8C8"><Run Text="1x"/></TextBlock>
             </StackPanel>
+            <StackPanel>
+                
+            </StackPanel>
 
 
         </StackPanel>
@@ -843,8 +904,8 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Height="40">
-                <CheckBox VerticalAlignment="Center" Style="{DynamicResource CheckBoxStyle1}" Content="Setup automaticlly" x:Name="AutoParamCheck" IsChecked="true" 
-                          Grid.Column="2" Grid.Row="5" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" Margin="40,4,0,0" Width="210" />
+                <CheckBox VerticalAlignment="Center" Style="{DynamicResource CheckBoxStyle1}" Content="Match source" x:Name="MatchSourceCheck" IsChecked="true" 
+                          Grid.Column="2" Grid.Row="5" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" Margin="40,4,0,0" Width="210" Checked="MatchSourceCheck_Checked" />
                 <Button Margin="20,0,0,0" Style="{DynamicResource ButtonStyle1}" x:Name="SaveVideoParamsButton" Content="Save" Click="SaveVideoParamsButton_Click"
                         Height="24" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" IsEnabled="True" Width="80"/>
                 <Button Margin="20,0,30,0" Style="{DynamicResource ButtonStyle1}" x:Name="PasteVideoParamsButton" Content="Paste" Click="PasteVideoParamsButton_Click"
@@ -948,19 +1009,28 @@
                     Stroke="#545454" StrokeThickness="1" RadiusX="5" RadiusY="5" RenderTransformOrigin="0.5,0.5" Grid.Row="3" Grid.Column="4" Grid.RowSpan="2"/>
 
         <StackPanel x:Name="MediaConrolPanel" Grid.Column="4" Grid.Row="3" Margin="5,21,5,1" Grid.RowSpan="2">
-            <Grid Height="60">
+            <Grid Margin="15,0,15,0" x:Name="SliderGrid" Height="60">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel x:Name="FirstMarkerPanel" Orientation="Horizontal" Height="60">
-                    <!--<Rectangle Margin="18,0,0,0" Width="3" Height="16" Fill="Red"></Rectangle>-->
-                </StackPanel>
-                <StackPanel x:Name="SecondMarkerPanel" Orientation="Horizontal" Height="60">
-                    <!--<Rectangle Margin="230,0,0,0" Width="3" Height="16" Fill="Red"></Rectangle>-->
-                </StackPanel>
+                <Slider Margin="0,22,0,0" Style="{DynamicResource FirstMarkerSliderStyle}"
+                    x:Name="FirstMarker" VerticalAlignment="Top" Height="18" 
+                    SmallChange="1" Maximum="0.1" Grid.Column="0" Value="0"
+                    ValueChanged="FirstMarker_ValueChanged"
+                    MouseLeftButtonDown="FirstMarker_OnMouseRightButtonDown"
+                    Loaded="FirstMarker_Loaded">
+                </Slider>
 
-                <Slider Margin="12,34,18,0" Style="{DynamicResource SliderStyle1}"
+                <Slider Margin="0,22,0,0" Style="{DynamicResource SecondMarkerSliderStyle}"
+                    x:Name="SecondMarker" VerticalAlignment="Top" Height="18" 
+                    SmallChange="1" Maximum="0.1" Grid.Column="0" Value="0.1"
+                    ValueChanged="SecondMarker_ValueChanged"
+                    MouseLeftButtonDown="SecondMarker_OnMouseRightButtonDown"
+                    Loaded="SecondMarker_Loaded">
+                </Slider>
+
+                <Slider Margin="0,32,0,0" Style="{DynamicResource SliderStyle1}"
                     PreviewMouseLeftButtonDown="TrimSlider_DragStarted" 
                     PreviewMouseLeftButtonUp="TrimSlider_DragCompleted"
                     ValueChanged="TrimSlider_ValueChanged"
@@ -983,15 +1053,23 @@
             </Grid>
 
             <TextBlock Margin="0,15,0,0" x:Name="ZoomStatusText" FontSize="14" FontFamily="Exo 2 SemiBold" Foreground="#E873FF" TextAlignment="Center" TextTrimming="CharacterEllipsis" Text="Drag the video into the preview window." Width="460" />
-            <StackPanel Orientation="Horizontal" Height="40">
 
-                <TextBlock VerticalAlignment="Center" Margin="20,0,0,0" x:Name="DurationText" FontFamily="Exo 2 SemiBold" Foreground="#FF909090" 
-                           FontSize="15" Text="Total: 0:00:00"/>
-                <TextBlock VerticalAlignment="Center" Text=" · 0 Mb" TextAlignment="Left" x:Name="EstimatedSizeText" HorizontalAlignment="Left" FontSize="15" FontFamily="Exo 2 SemiBold" Foreground="#FF909090"/>
-            </StackPanel>
+            <Grid Height="40">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
 
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Margin="20,0,0,0" x:Name="DurationText" FontFamily="Exo 2 SemiBold" Foreground="#FF909090" 
+                            FontSize="15" Text="Total: 0:00:00"/>
+                    <TextBlock VerticalAlignment="Center" Text=" · 0 Mb" TextAlignment="Left" x:Name="EstimatedSizeText" HorizontalAlignment="Left" 
+                            FontSize="15" FontFamily="Exo 2 SemiBold" Foreground="#FF909090"/>
+                </StackPanel>
 
-
+                <CheckBox IsEnabled="false" x:Name="ReverseCropCheck" VerticalAlignment="Center" HorizontalAlignment="Right" Style="{DynamicResource CheckBoxStyle1}" Content="Reverse cut" Click="ReverseCropCheck_Click" IsChecked="false" 
+                        Grid.Column="2" FontFamily="Exo 2 SemiBold" FontSize="14" Margin="0,0,30,0" Foreground="#FFC8C8C8" Checked="ReverseCropCheck_Click" Unchecked="ReverseCropCheck_Click"/>
+            </Grid>
         </StackPanel>
 
 
@@ -1000,11 +1078,11 @@
             <TextBlock Margin="0,10,0,0" x:Name="LastRenderedVideoText" HorizontalAlignment="Stretch" Cursor="Hand" MouseLeftButtonDown="ViewRenderedVideo" Width="332" FontSize="14" FontFamily="Exo 2 SemiBold" Foreground="#E873FF" TextAlignment="Center" TextTrimming="CharacterEllipsis" IsEnabled="False"><Run Text="[100%] - VideoName.mp4"/></TextBlock>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="70">
                 <Button Style="{DynamicResource ButtonStyle1}" x:Name="HelpButton" Content="Hotkeys" Click="HelpButton_Click"
-                        MinWidth="150" MaxWidth="200" Height="30" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8"/>
-                <Button Margin="20,0,0,0" Style="{DynamicResource ButtonStyle1}" x:Name="RenderButton" Content="Render" Click="RenderButton_Click" 
-                        MinWidth="150" MaxWidth="200" Height="30" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8" IsEnabled="False"/>
+                        MinWidth="100" MaxWidth="150" Height="30" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8"/>
+                <Button Margin="20,0,0,0" Style="{DynamicResource ButtonStyle1}" x:Name="RenderButton" Content="Render selection" Click="RenderButton_Click" 
+                        MinWidth="210" MaxWidth="250" Height="30" FontFamily="Exo 2 SemiBold" FontSize="15" Foreground="#FFC8C8C8" IsEnabled="False"/>
             </StackPanel>
-            <CheckBox Style="{DynamicResource CheckBoxStyle1}" HorizontalAlignment="Center" Content="Display frames when rewinding" x:Name="PrewievsOnDraggingCheck" IsChecked="true" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" />
+            <CheckBox Style="{DynamicResource CheckBoxStyle1}" HorizontalAlignment="Center" Content="Display frames when rewinding" x:Name="PreviewsOnDraggingCheck" IsChecked="true" FontFamily="Exo 2 SemiBold" FontSize="14" Foreground="#FFC8C8C8" />
         </StackPanel>
     </Grid>
 </Window>

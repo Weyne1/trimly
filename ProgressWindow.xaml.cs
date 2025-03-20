@@ -1,19 +1,9 @@
 ﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Trimly
 {
@@ -26,7 +16,6 @@ namespace Trimly
         }
 
         public void ChangeTitle(string title) => Title = title;
-
         public void ChangeVideoTitle(string videoTitle)
         {
             VideoTitle.Text = videoTitle;
@@ -39,11 +28,18 @@ namespace Trimly
             {
                 double currentProgress = ProgressBar.Value;
 
-                AnimateProgressBar(currentProgress, progress, TimeSpan.FromSeconds(0.5));
+                if (progress > currentProgress)
+                {
+                    AnimateProgressBar(currentProgress, progress, TimeSpan.FromSeconds(0.5));
+                }
+                else
+                {
+                    AnimateProgressBar(currentProgress, progress, TimeSpan.FromSeconds(0));
+                }
+                
                 AnimateText(currentProgress, progress, TimeSpan.FromSeconds(0.5));
             }));
         }
-
 
         private void AnimateProgressBar(double fromValue, double toValue, TimeSpan duration)
         {
@@ -57,7 +53,6 @@ namespace Trimly
 
             ProgressBar.BeginAnimation(ProgressBar.ValueProperty, progressBarAnimation);
         }
-
         private void AnimateText(double fromValue, double toValue, TimeSpan duration)
         {
             DoubleAnimation textAnimation = new DoubleAnimation
@@ -78,8 +73,6 @@ namespace Trimly
             };
             Percent.BeginAnimation(OpacityProperty, textAnimation);
         }
-
-
 
         public void SetWindowParent(MainWindow window) => mainWindow = window;
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FFMpegCore;
+using System;
 using System.IO;
 using System.Windows;
 
@@ -16,7 +17,24 @@ namespace Trimly
 
             if (!File.Exists(ffmpegPath) || !File.Exists(ffprobePath))
             {
-                MessageBox.Show("Please install FFmpeg and place the executable files ffmpeg.exe and ffprobe.exe in the same folder where this program is located.", "FFmpeg not found", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBoxResult result = MessageBox.Show(
+                    "Please install ffmpeg.exe and ffprobe.exe and place them in the same folder where this program is located. \n\nPress \"OK\" to open link.",
+                    "FFmpeg not found",
+                    MessageBoxButton.OKCancel,
+                    MessageBoxImage.Exclamation,
+                    MessageBoxResult.OK,
+                    MessageBoxOptions.DefaultDesktopOnly
+                );
+
+                if (result == MessageBoxResult.OK)
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "https://www.gyan.dev/ffmpeg/builds/",
+                        UseShellExecute = true
+                    });
+                }
+
                 Shutdown();
             }
         }

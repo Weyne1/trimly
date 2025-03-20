@@ -23,12 +23,14 @@ namespace Trimly
         public byte Type { get; set; }
         public byte SampleRates { get; set; }
         public byte Channels { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public short Width { get; set; }
+        public short Height { get; set; }
         public short FPS { get; set; }
         public int VideoBitrate { get; set; }
         public int AudioBitrate { get; set; }
         public short BufferFPS { get; set; }
+        public short BufferWidth { get; set; }
+        public short BufferHeight { get; set; }
         public int BufferVideoBitrate { get; set; }
         public int BufferAudioBitrate { get; set; }
         public short BufferSampleRates { get; set; }
